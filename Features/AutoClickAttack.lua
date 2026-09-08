@@ -1,11 +1,14 @@
 -- ==================================================
--- AUTO CLICK ATTACK LOOP (SEA3) - ជាមួយ Config Save
+-- AUTO CLICK ATTACK LOOP (SEA3) - NO CONFIG
 -- ==================================================
 
 local Y = _G.Y
 local Player = _G.YOKUDO.Player
 local Settings = _G.YOKUDO
 
+-- ==================================================
+-- STATE
+-- ==================================================
 _G.YOKUDO_AutoClickAttackEnabled = false
 _G.YOKUDO_ClickAttackLoopConnection = nil
 
@@ -82,15 +85,7 @@ local function clickAttackLoop()
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
--- ==================================================
-function _G.YOKUDO_SetClickAttack(enabled)
-    if enabled == _G.YOKUDO_AutoClickAttackEnabled then return end
-    _G.YOKUDO_ToggleAutoClickAttack()
-end
-
--- ==================================================
--- TOGGLE FUNCTION (ជាមួយ Config Save & UI Update)
+-- TOGGLE FUNCTION (គ្មាន Config)
 -- ==================================================
 function _G.YOKUDO_ToggleAutoClickAttack()
     _G.YOKUDO_AutoClickAttackEnabled = not _G.YOKUDO_AutoClickAttackEnabled
@@ -114,16 +109,11 @@ function _G.YOKUDO_ToggleAutoClickAttack()
     if _G.YOKUDO_UpdateUI_ClickAttack then
         _G.YOKUDO_UpdateUI_ClickAttack(_G.YOKUDO_AutoClickAttackEnabled)
     end
-    
-    -- Save Config
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoClickAttack", _G.YOKUDO_AutoClickAttackEnabled)
-    end
 end
 
 -- ==================================================
--- STATE (ប្រើ or false ដើម្បីកុំឲ្យ Reset)
+-- STATE
 -- ==================================================
-_G.YOKUDO_AutoClickAttackEnabled = _G.YOKUDO_AutoClickAttackEnabled or false
+_G.YOKUDO_AutoClickAttackEnabled = false
 
-print("✅ AutoClickAttack Loaded (Config Ready - With Set)")
+print("✅ AutoClickAttack Loaded (SEA3 - No Config)")
