@@ -4,7 +4,7 @@
 -- loadstring(game:HttpGet("https://raw.githubusercontent.com/hotibody99828/backupsea2/main/Loader.lua"))()
 -- ==================================================
 
-local BASE_URL = "https://raw.githubusercontent.com/hotibody99828/backupsea2/main/"
+local BASE_URL = "https://raw.githubusercontent.com/hotibody99828/dodonana99/main/"
 
 print("🔵 Loading YOKUDO HUB | SEA3 | [Premium]...")
 
