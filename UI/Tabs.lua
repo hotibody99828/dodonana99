@@ -204,7 +204,7 @@ local function CreateServerList(parent)
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH BUTTON (ចុចបានគ្រប់ពេល + Cooldown លាក់)
+-- ⭐ CREATE REFRESH BUTTON (ចុចបានគ្រប់ពេល + Animation + Cooldown លាក់)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
@@ -218,7 +218,7 @@ local function CreateRefreshBtn(parent, type, titleText)
     btnHolder.BorderSizePixel = 0
     btnHolder.Parent = parent
 
-    -- Button (ពេញទទឹង + ដាក់ Text ខាងឆ្វេង)
+    -- Button (ពេញទទឹង Page)
     local refreshBtn = Instance.new("TextButton")
     refreshBtn.Size = UDim2.new(1, 0, 0, 35)
     refreshBtn.Position = UDim2.new(0, 0, 0, 0)
@@ -226,7 +226,6 @@ local function CreateRefreshBtn(parent, type, titleText)
     refreshBtn.BackgroundTransparency = 0.3
     refreshBtn.Text = ""
     refreshBtn.AutoButtonColor = false
-    refreshBtn.Active = true  -- ⭐ អាចចុចបានគ្រប់ពេល
     refreshBtn.Parent = btnHolder
 
     local btnCorner = Instance.new("UICorner")
@@ -273,35 +272,38 @@ local function CreateRefreshBtn(parent, type, titleText)
         slide.Size = UDim2.new(0, 0, 1, 0)
     end
 
-    -- Cooldown (លាក់ - កុំឲ្យ User ឃើញ)
+    -- ⭐ Cooldown - អាចចុចបានគ្រប់ពេល ប៉ុន្តែ Data មានប្រសិទ្ធភាពតែពេលដល់ 5s
     local function CheckCooldown()
-        return isCooldown
+        if not isCooldown then
+            return false
+        end
+        return true
     end
 
     -- Click Event
     refreshBtn.MouseButton1Click:Connect(function()
-        -- ⭐ អាចចុចបានគ្រប់ពេល ប៉ុន្តែមាន Cooldown លាក់
-        if CheckCooldown() then
-            return
-        end
-
-        isCooldown = true
+        -- ⭐ អាចចុចបានគ្រប់ពេល (មិនរារាំង)
         LastRefreshTime = tick()
         PlaySlideAnimation()
 
-        local servers = LoadDataFromVPS(type)
-        UpdateServerList(serverList, servers, titleText)
+        -- ⭐ តែ Data មានប្រសិទ្ធភាពតែពេលដល់ 5s
+        if not CheckCooldown() then
+            isCooldown = true
+            
+            local servers = LoadDataFromVPS(type)
+            UpdateServerList(serverList, servers, titleText)
 
-        task.spawn(function()
-            while isCooldown do
-                local Elapsed = tick() - LastRefreshTime
-                if Elapsed >= CooldownTime then
-                    isCooldown = false
-                    break
+            task.spawn(function()
+                while isCooldown do
+                    local Elapsed = tick() - LastRefreshTime
+                    if Elapsed >= CooldownTime then
+                        isCooldown = false
+                        break
+                    end
+                    task.wait(0.1)
                 end
-                task.wait(0.1)
-            end
-        end)
+            end)
+        end
     end)
 
     return refreshBtn, serverList
