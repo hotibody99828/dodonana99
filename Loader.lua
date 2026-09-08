@@ -237,6 +237,7 @@ end)
 -- ==================================================
 task.spawn(function()
     local Features = {
+        -- ===== HUB FEATURES =====
         "SpeedHack",
         "JumpHack",
         "AutoEquip",
@@ -258,7 +259,25 @@ task.spawn(function()
         "AutoEliteHunter",
         "AutoHopEliteHunter",
         "CharacterHandler",
-        "WeaponWatcher"
+        "WeaponWatcher",
+        
+        -- ===== SERVER CHECKER FEATURES =====
+        "NearMoonChecker",
+        "FullMoonChecker",
+        "DoughKingChecker",
+        "RipIndraChecker",
+        "CakePrinceChecker",
+        "CakeQueenChecker",
+        "EliteHunterChecker",
+        "SoulReaperChecker",
+        "PirateRaidChecker",
+        "TyrantSkiesChecker",
+        "MirageIslandChecker",
+        "PrehistoricIslandChecker",
+        "KitsuneIslandChecker",
+        "HakiLegendaryChecker",
+        "FruitChecker",
+        "BerryChecker"
     }
     
     local total = #Features
