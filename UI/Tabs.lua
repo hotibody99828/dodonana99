@@ -264,7 +264,7 @@ local function CreateRefreshBtn(parent, type, titleText)
     -- Animation Function
     local function PlaySlideAnimation()
         slide.Size = UDim2.new(0, 0, 1, 0)
-        local tween = Y.TS:Create(slide, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        local tween = Y.TS:Create(slide, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Size = UDim2.new(1, 0, 1, 0)
         })
         tween:Play()
