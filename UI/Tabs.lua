@@ -1,12 +1,282 @@
 -- ==================================================
--- TABS (SEA3) + SMART CHECKBOX (NO CONFIG)
+-- TABS (SEA3) + SERVER CHECKER (LOAD FROM VPS)
 -- ==================================================
 
 local Y = _G.Y
 local Services = _G.YOKUDO.Services
 local Settings = _G.YOKUDO
+local HttpService = game:GetService("HttpService")
 
--- Create Pages
+-- ==================================================
+-- ⭐ VPS CONFIG
+-- ==================================================
+local VPS_URL = "http://217.216.73.147:3000"
+
+-- ==================================================
+-- ⭐ LOAD DATA FROM VPS
+-- ==================================================
+local function LoadDataFromVPS(type)
+    pcall(function()
+        local requestFunc = syn and syn.request or http and http.request or request
+        if requestFunc then
+            local response = requestFunc({
+                Url = VPS_URL .. "/api/data/" .. type,
+                Method = "GET"
+            })
+            
+            if response and response.StatusCode == 200 then
+                local data = HttpService:JSONDecode(response.Body)
+                return data.servers or {}
+            end
+        end
+    end)
+    return {}
+end
+
+-- ==================================================
+-- ⭐ MASK JOBID (លាក់ពាក់កណ្ដាល)
+-- ==================================================
+local function MaskJobId(jobId)
+    if not jobId or jobId == "" then
+        return "Unknown"
+    end
+    
+    if #jobId > 8 then
+        local first = string.sub(jobId, 1, 8)
+        local last = string.sub(jobId, -4)
+        return first .. "..." .. last
+    end
+    
+    return jobId
+end
+
+-- ==================================================
+-- ⭐ CREATE SERVER CARD (តូចស្អាត)
+-- ==================================================
+local function CreateServerCard(parent, data, titleText)
+    -- Card Container
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, 0, 0, 90)
+    card.BackgroundColor3 = Color3.fromRGB(22, 23, 31)
+    card.BorderSizePixel = 0
+    card.Parent = parent
+    
+    -- Corner
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = card
+    
+    -- Border
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(105, 90, 190)
+    stroke.Thickness = 1
+    stroke.Transparency = 0.3
+    stroke.Parent = card
+    
+    -- Title (គ្មានលេខរៀង)
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -20, 0, 20)
+    title.Position = UDim2.new(0, 10, 0, 5)
+    title.BackgroundTransparency = 1
+    title.Text = titleText
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 13
+    title.Font = Enum.Font.GothamBold
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = card
+    
+    -- Player Count
+    local playerLabel = Instance.new("TextLabel")
+    playerLabel.Size = UDim2.new(1, -20, 0, 16)
+    playerLabel.Position = UDim2.new(0, 10, 0, 26)
+    playerLabel.BackgroundTransparency = 1
+    playerLabel.Text = "Player Count : " .. tostring(data.players or 0)
+    playerLabel.TextColor3 = Color3.fromRGB(200, 200, 220)
+    playerLabel.TextSize = 11
+    playerLabel.Font = Enum.Font.GothamMedium
+    playerLabel.TextXAlignment = Enum.TextXAlignment.Left
+    playerLabel.Parent = card
+    
+    -- JobID (Mask - លាក់ពាក់កណ្ដាល)
+    local jobLabel = Instance.new("TextLabel")
+    jobLabel.Size = UDim2.new(1, -20, 0, 16)
+    jobLabel.Position = UDim2.new(0, 10, 0, 43)
+    jobLabel.BackgroundTransparency = 1
+    jobLabel.Text = "Jobid : " .. MaskJobId(data.jobid)
+    jobLabel.TextColor3 = Color3.fromRGB(145, 145, 175)
+    jobLabel.TextSize = 10
+    jobLabel.Font = Enum.Font.Gotham
+    jobLabel.TextXAlignment = Enum.TextXAlignment.Left
+    jobLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    jobLabel.Parent = card
+    
+    -- Age (ពណ៌លឿង)
+    local ageLabel = Instance.new("TextLabel")
+    ageLabel.Size = UDim2.new(0, 60, 0, 16)
+    ageLabel.Position = UDim2.new(1, -70, 0, 43)
+    ageLabel.BackgroundTransparency = 1
+    ageLabel.Text = "Age : " .. tostring(data.age or 0) .. "s"
+    ageLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
+    ageLabel.TextSize = 11
+    ageLabel.Font = Enum.Font.GothamBold
+    ageLabel.TextXAlignment = Enum.TextXAlignment.Right
+    ageLabel.Parent = card
+    
+    -- Join Button
+    local joinBtn = Instance.new("TextButton")
+    joinBtn.Size = UDim2.new(0, 60, 0, 22)
+    joinBtn.Position = UDim2.new(1, -70, 0, 5)
+    joinBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
+    joinBtn.Text = "Join"
+    joinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    joinBtn.TextSize = 11
+    joinBtn.Font = Enum.Font.GothamBold
+    joinBtn.Parent = card
+    
+    local joinCorner = Instance.new("UICorner")
+    joinCorner.CornerRadius = UDim.new(0, 4)
+    joinCorner.Parent = joinBtn
+    
+    joinBtn.MouseButton1Click:Connect(function()
+        if _G.YOKUDO_JoinServerByJobId then
+            _G.YOKUDO_JoinServerByJobId(data.jobid)
+        end
+    end)
+    
+    return card
+end
+
+-- ==================================================
+-- ⭐ UPDATE SERVER LIST (បង្ហាញ Data ពី VPS)
+-- ==================================================
+local function UpdateServerList(serverList, servers, titleText)
+    -- សម្អាតចាស់
+    for _, child in ipairs(serverList:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    -- តម្រៀបតាម Age (តិចបំផុតនៅខាងលើ)
+    table.sort(servers, function(a, b)
+        return a.age < b.age
+    end)
+    
+    if #servers == 0 then
+        local emptyLabel = Instance.new("TextLabel")
+        emptyLabel.Size = UDim2.new(1, 0, 0, 30)
+        emptyLabel.BackgroundTransparency = 1
+        emptyLabel.Text = "No servers found"
+        emptyLabel.TextColor3 = Color3.fromRGB(155, 155, 175)
+        emptyLabel.TextSize = 12
+        emptyLabel.Font = Enum.Font.GothamMedium
+        emptyLabel.Parent = serverList
+        return
+    end
+    
+    -- បង្ហាញ Card នីមួយៗ
+    for i, server in ipairs(servers) do
+        CreateServerCard(serverList, server, titleText)
+    end
+end
+
+-- ==================================================
+-- ⭐ CREATE SERVER LIST CONTAINER
+-- ==================================================
+local function CreateServerList(parent)
+    local serverList = Instance.new("ScrollingFrame")
+    serverList.Size = UDim2.new(1, 0, 0, 250)
+    serverList.BackgroundTransparency = 1
+    serverList.BorderSizePixel = 0
+    serverList.ScrollBarThickness = 4
+    serverList.ScrollBarImageColor3 = Color3.fromRGB(105, 90, 190)
+    serverList.CanvasSize = UDim2.new(0, 0, 0, 0)
+    serverList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    serverList.Parent = parent
+    
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Padding = UDim.new(0, 6)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = serverList
+    
+    return serverList
+end
+
+-- ==================================================
+-- ⭐ CREATE REFRESH BUTTON WITH COOLDOWN 5s
+-- ==================================================
+local function CreateRefreshBtn(parent, type, titleText)
+    local CooldownTime = 5
+    local LastRefreshTime = 0
+    local isCooldown = false
+    
+    local refreshBtn = Instance.new("TextButton")
+    refreshBtn.Size = UDim2.new(1, 0, 0, 30)
+    refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
+    refreshBtn.Text = "🔄 Refresh Data"
+    refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    refreshBtn.TextSize = 12
+    refreshBtn.Font = Enum.Font.GothamBold
+    refreshBtn.Parent = parent
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = refreshBtn
+    
+    -- Server List
+    local serverList = CreateServerList(parent)
+    
+    -- Update Refresh Button UI
+    local function UpdateRefreshButton()
+        if isCooldown then
+            refreshBtn.Text = "⏳ រង់ចាំ " .. CooldownTime .. "s"
+            refreshBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+            refreshBtn.Active = false
+        else
+            refreshBtn.Text = "🔄 Refresh Data"
+            refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
+            refreshBtn.Active = true
+        end
+    end
+    
+    -- Click Event
+    refreshBtn.MouseButton1Click:Connect(function()
+        if isCooldown then return end
+        
+        -- ចាប់ផ្ដើម Cooldown
+        isCooldown = true
+        LastRefreshTime = tick()
+        UpdateRefreshButton()
+        
+        -- ហៅ Load Data ពី VPS
+        local servers = LoadDataFromVPS(type)
+        UpdateServerList(serverList, servers, titleText)
+        
+        -- រាប់ថយក្រោយ
+        task.spawn(function()
+            while isCooldown do
+                local Elapsed = tick() - LastRefreshTime
+                local Remaining = math.ceil(CooldownTime - Elapsed)
+                
+                if Remaining <= 0 then
+                    isCooldown = false
+                    UpdateRefreshButton()
+                    break
+                else
+                    refreshBtn.Text = "⏳ រង់ចាំ " .. Remaining .. "s"
+                end
+                
+                task.wait(0.1)
+            end
+        end)
+    end)
+    
+    return refreshBtn, serverList
+end
+
+-- ==================================================
+-- CREATE PAGES
+-- ==================================================
 local InfoPage = CreatePage("INFO")
 local ShopPage = CreatePage("SHOP")
 local AutoHopPage = CreatePage("AUTO_HOP")
@@ -28,7 +298,9 @@ local FruitPage = CreatePage("FRUIT")
 local BerryPage = CreatePage("BERRY")
 local SettingPage = CreatePage("SETTING")
 
--- Create Tabs
+-- ==================================================
+-- CREATE TABS
+-- ==================================================
 local InfoTab = CreateTab("Info", 1)
 local ShopTab = CreateTab("Shop", 2)
 local AutoHopTab = CreateTab("Auto Hop", 3)
@@ -50,7 +322,9 @@ local FruitTab = CreateTab("Fruit", 18)
 local BerryTab = CreateTab("Berry", 19)
 local SettingTab = CreateTab("Setting", 20)
 
--- Tab Map
+-- ==================================================
+-- TAB MAP
+-- ==================================================
 local Tabs = {
     [InfoTab] = InfoPage,
     [ShopTab] = ShopPage,
@@ -74,6 +348,9 @@ local Tabs = {
     [SettingTab] = SettingPage
 }
 
+-- ==================================================
+-- SELECT TAB
+-- ==================================================
 local function SelectTab(SelectedTab, SelectedPage)
     for Tab, Page in pairs(Tabs) do
         Page.Visible = false
@@ -114,10 +391,8 @@ end
 SelectTab(InfoTab, InfoPage)
 
 -- ==================================================
--- ⭐ INFO TAB (NO COLOR - FAST LOAD)
+-- ⭐ INFO TAB
 -- ==================================================
-
--- Title
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Name = "TitleLabel"
 titleLabel.Size = UDim2.new(1, -20, 0, 40)
@@ -131,7 +406,6 @@ titleLabel.TextYAlignment = Enum.TextYAlignment.Center
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.Parent = InfoPage
 
--- Line
 local line = Instance.new("Frame")
 line.Name = "Line"
 line.Size = UDim2.new(0.9, 0, 0, 1)
@@ -140,7 +414,6 @@ line.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
 line.BorderSizePixel = 0
 line.Parent = InfoPage
 
--- Telegram Group
 local tgLabel = Instance.new("TextLabel")
 tgLabel.Name = "TgLabel"
 tgLabel.Size = UDim2.new(1, -20, 0, 22)
@@ -167,7 +440,6 @@ tgLink.TextYAlignment = Enum.TextYAlignment.Center
 tgLink.Font = Enum.Font.Gotham
 tgLink.Parent = InfoPage
 
--- Discord Group
 local dcLabel = Instance.new("TextLabel")
 dcLabel.Name = "DcLabel"
 dcLabel.Size = UDim2.new(1, -20, 0, 22)
@@ -194,7 +466,6 @@ dcLink.TextYAlignment = Enum.TextYAlignment.Center
 dcLink.Font = Enum.Font.Gotham
 dcLink.Parent = InfoPage
 
--- Telegram User
 local tgUserLabel = Instance.new("TextLabel")
 tgUserLabel.Name = "TgUserLabel"
 tgUserLabel.Size = UDim2.new(1, -20, 0, 22)
@@ -221,7 +492,6 @@ tgUserLink.TextYAlignment = Enum.TextYAlignment.Center
 tgUserLink.Font = Enum.Font.Gotham
 tgUserLink.Parent = InfoPage
 
--- Build By
 local buildLabel = Instance.new("TextLabel")
 buildLabel.Name = "BuildLabel"
 buildLabel.Size = UDim2.new(1, -20, 0, 30)
@@ -236,39 +506,38 @@ buildLabel.Font = Enum.Font.GothamBold
 buildLabel.Parent = InfoPage
 
 -- ==================================================
--- REFRESH BUTTONS
+-- ⭐ SERVER CHECKER (ជំនួស Refresh Button ចាស់)
 -- ==================================================
-CreateRefreshButton(NearMoonPage, 1)
-CreateRefreshButton(FullMoonPage, 1)
-CreateRefreshButton(DoughKingPage, 1)
-CreateRefreshButton(RipIndraPage, 1)
-CreateRefreshButton(CakePrincePage, 1)
-CreateRefreshButton(CakeQueenPage, 1)
-CreateRefreshButton(EliteHunterPage, 1)
-CreateRefreshButton(SoulReaperPage, 1)
-CreateRefreshButton(PirateRaidPage, 1)
-CreateRefreshButton(TyrantSkiesPage, 1)
-CreateRefreshButton(MirageIslandPage, 1)
-CreateRefreshButton(PrehistoricIslandPage, 1)
-CreateRefreshButton(KitsuneIslandPage, 1)
-CreateRefreshButton(HakiLegendaryPage, 1)
-CreateRefreshButton(FruitPage, 1)
-CreateRefreshButton(BerryPage, 1)
+CreateRefreshBtn(NearMoonPage, "sea3_near_moon", "Near Moon")
+CreateRefreshBtn(FullMoonPage, "sea3_full_moon", "Full Moon")
+CreateRefreshBtn(DoughKingPage, "sea3_dough_king", "Dough King")
+CreateRefreshBtn(RipIndraPage, "sea3_rip_indra", "Rip Indra")
+CreateRefreshBtn(CakePrincePage, "sea3_cake_prince", "Cake Prince")
+CreateRefreshBtn(CakeQueenPage, "sea3_cake_queen", "Cake Queen")
+CreateRefreshBtn(EliteHunterPage, "sea3_elite_hunter", "Elite Hunter")
+CreateRefreshBtn(SoulReaperPage, "sea3_soul_reaper", "Soul Reaper")
+CreateRefreshBtn(PirateRaidPage, "sea3_castle", "Pirate Raid")
+CreateRefreshBtn(TyrantSkiesPage, "sea3_tyrant", "Tyrant of the Skies")
+CreateRefreshBtn(MirageIslandPage, "sea3_mirage", "Mirage Island")
+CreateRefreshBtn(PrehistoricIslandPage, "sea3_prehistoric", "Prehistoric Island")
+CreateRefreshBtn(KitsuneIslandPage, "sea3_kitsune", "Kitsune Island")
+CreateRefreshBtn(HakiLegendaryPage, "sea3_haki", "Haki Legendary")
+CreateRefreshBtn(FruitPage, "sea3_fruit", "Fruit")
+CreateRefreshBtn(BerryPage, "sea3_berry", "Berry")
 
 -- ==================================================
--- SHOP TAB (NO CONFIG)
+-- SHOP TAB
 -- ==================================================
 CreateSectionTitle(ShopPage, "Shop", 1)
 
--- ⭐ Auto Unlock Haki (Smart Checkbox - ប្រើ ToggleFunction)
 local unlockHaki = CreateSmartCheckbox(
     ShopPage,
     "Auto Unlock Haki Legendary",
     2,
-    function()  -- ToggleFunction
+    function()
         _G.YOKUDO_ToggleAutoUnlockHaki()
     end,
-    function()  -- GetStateFunction
+    function()
         return _G.YOKUDO_AutoUnlockHakiEnabled or false
     end
 )
@@ -277,9 +546,7 @@ if _G.YOKUDO_UpdateUI_UnlockHaki == nil then
     _G.YOKUDO_UpdateUI_UnlockHaki = unlockHaki.Update
 end
 
--- ==================================================
--- ⭐ JOIN SERVER WITH JOBID (DECODE + JOIN)
--- ==================================================
+-- Join Server With Jobid
 CreateSectionTitle(ShopPage, "Join Server With Jobid", 3)
 
 local jobIdHolder = Instance.new("Frame")
@@ -390,12 +657,11 @@ jobIdTextBox.FocusLost:Connect(function(enterPressed)
 end)
 
 -- ==================================================
--- AUTO HOP TAB (NO CONFIG)
+-- AUTO HOP TAB
 -- ==================================================
 CreateSectionTitle(AutoHopPage, "Select Weapon for attack", 1)
 CreateWeaponDropdown(AutoHopPage, 2)
 
--- ⭐ Auto Click Attack (Smart Checkbox - ប្រើ ToggleFunction)
 local clickAttack = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Click Attack",
@@ -415,7 +681,6 @@ end
 -- Farm Boss: Dough King
 CreateSectionTitle(AutoHopPage, "Farm Boss", 4)
 
--- ⭐ Auto Dough King (Smart Checkbox - ប្រើ ToggleFunction)
 local doughKing = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Dough King",
@@ -432,13 +697,12 @@ if _G.YOKUDO_UpdateUI_DoughKing == nil then
     _G.YOKUDO_UpdateUI_DoughKing = doughKing.Update
 end
 
--- Auto Hop Dough King (Checkbox ដើម)
+-- Auto Hop Dough King
 local hopDoughKingFrame, hopDoughKingCheckbox, getHopDoughKingState = CreateCheckbox(AutoHopPage, "Auto Hop Dough King", 6)
 
 -- Farm Boss: Rip Indra
 CreateSectionTitle(AutoHopPage, "Farm Boss", 7)
 
--- ⭐ Auto Rip Indra (Smart Checkbox - ប្រើ ToggleFunction)
 local ripIndra = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Rip indra",
@@ -455,13 +719,12 @@ if _G.YOKUDO_UpdateUI_RipIndra == nil then
     _G.YOKUDO_UpdateUI_RipIndra = ripIndra.Update
 end
 
--- Auto Hop Rip Indra (Checkbox ដើម)
+-- Auto Hop Rip Indra
 local hopRipIndraFrame, hopRipIndraCheckbox, getHopRipIndraState = CreateCheckbox(AutoHopPage, "Auto Hop Rip indra", 9)
 
 -- Farm Boss: Cake Prince
 CreateSectionTitle(AutoHopPage, "Farm Boss", 10)
 
--- ⭐ Auto Cake Prince (Smart Checkbox - ប្រើ ToggleFunction)
 local cakePrince = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Cake Prince",
@@ -478,13 +741,12 @@ if _G.YOKUDO_UpdateUI_CakePrince == nil then
     _G.YOKUDO_UpdateUI_CakePrince = cakePrince.Update
 end
 
--- Auto Hop Cake Prince (Checkbox ដើម)
+-- Auto Hop Cake Prince
 local hopCakePrinceFrame, hopCakePrinceCheckbox, getHopCakePrinceState = CreateCheckbox(AutoHopPage, "Auto Hop Cake Prince", 12)
 
 -- Farm Boss: Soul Reaper
 CreateSectionTitle(AutoHopPage, "Farm Boss", 13)
 
--- ⭐ Auto Soul Reaper (Smart Checkbox - ប្រើ ToggleFunction)
 local soulReaper = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Soul Reaper",
@@ -501,13 +763,12 @@ if _G.YOKUDO_UpdateUI_SoulReaper == nil then
     _G.YOKUDO_UpdateUI_SoulReaper = soulReaper.Update
 end
 
--- Auto Hop Soul Reaper (Checkbox ដើម)
+-- Auto Hop Soul Reaper
 local hopSoulReaperFrame, hopSoulReaperCheckbox, getHopSoulReaperState = CreateCheckbox(AutoHopPage, "Auto Hop Soul Reaper", 15)
 
 -- Farm Boss: Elite Hunter
 CreateSectionTitle(AutoHopPage, "Farm Boss", 16)
 
--- ⭐ Auto Elite Hunter (Smart Checkbox - ប្រើ ToggleFunction)
 local eliteHunter = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Elite Hunter",
@@ -524,12 +785,10 @@ if _G.YOKUDO_UpdateUI_EliteHunter == nil then
     _G.YOKUDO_UpdateUI_EliteHunter = eliteHunter.Update
 end
 
--- Auto Hop Elite Hunter (Checkbox ដើម)
+-- Auto Hop Elite Hunter
 local hopEliteHunterFrame, hopEliteHunterCheckbox, getHopEliteHunterState = CreateCheckbox(AutoHopPage, "Auto Hop Elite Hunter", 18)
 
--- ==================================================
--- AUTO HOP CHECKBOX EVENTS
--- ==================================================
+-- Auto Hop Checkbox Events
 hopDoughKingCheckbox.MouseButton1Click:Connect(function()
     if _G.YOKUDO_ToggleAutoHopDoughKing then
         _G.YOKUDO_ToggleAutoHopDoughKing()
@@ -561,7 +820,7 @@ hopEliteHunterCheckbox.MouseButton1Click:Connect(function()
 end)
 
 -- ==================================================
--- SETTING TAB (NO CONFIG)
+-- SETTING TAB
 -- ==================================================
 CreateSectionTitle(SettingPage, "Tween Settings", 1)
 CreateStopTweenButton(SettingPage, 2)
@@ -571,7 +830,6 @@ local noClipFrame, noClipCheckbox, getNoClipState = CreateCheckbox(SettingPage, 
 
 CreateSectionTitle(SettingPage, "Auto Abilities", 5)
 
--- ⭐ Auto Buso (Smart Checkbox - ប្រើ ToggleFunction)
 local buso = CreateSmartCheckbox(
     SettingPage,
     "Auto Buso",
@@ -588,14 +846,12 @@ if _G.YOKUDO_UpdateUI_Buso == nil then
     _G.YOKUDO_UpdateUI_Buso = buso.Update
 end
 
--- ⭐ Auto Ken (Checkbox ដើម - គ្មាន Config)
 local obsFrame, obsCheckbox, getObsState = CreateCheckbox(SettingPage, "Auto Ken", 7)
 
 CreateSectionTitle(SettingPage, "Movement Hacks", 8)
 local jumpHolder, jumpCheckbox, getJumpState, jumpTextBox, getJumpValue = CreateTextBoxWithCheckbox(SettingPage, "Jump Hack", 9)
 local speedHolder, speedCheckbox, getSpeedState, speedTextBox, getSpeedValue = CreateTextBoxWithCheckbox(SettingPage, "Speed Hack", 10)
 
--- ⭐ Walk on Water (Smart Checkbox - ប្រើ ToggleFunction)
 local walk = CreateSmartCheckbox(
     SettingPage,
     "Walk on Water",
@@ -612,9 +868,7 @@ if _G.YOKUDO_UpdateUI_Walk == nil then
     _G.YOKUDO_UpdateUI_Walk = walk.Update
 end
 
--- ==================================================
--- SETTING CHECKBOX EVENTS
--- ==================================================
+-- Setting Checkbox Events
 obsCheckbox.MouseButton1Click:Connect(function()
     if _G.YOKUDO_ToggleAutoKen then
         _G.YOKUDO_ToggleAutoKen()
@@ -633,4 +887,4 @@ end)
 
 _G.YOKUDO_AutoHopPage = AutoHopPage
 
-print("✅ Tabs Loaded (SEA3 - No Config)")
+print("✅ Tabs Loaded (SEA3 - No Config - Server Checker)")
