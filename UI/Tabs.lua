@@ -155,12 +155,28 @@ local function UpdateServerList(serverList, servers, titleText)
     end)
 
     if #servers == 0 then
-        return  -- ⭐ ដក "No servers found" ចេញ - ទុកតែ Button Refresh Server
+        return
     end
 
-    -- ⭐ ប្រើ server.extra ជា Title (បើមាន)
     for i, server in ipairs(servers) do
-        local displayTitle = server.extra and server.extra ~= "" and server.extra or titleText
+        local displayTitle = titleText
+        
+        -- ⭐ បើ extra ជាលេខ (នាទី) → បង្ហាញអត្ថបទពេញលេញ
+        if server.extra and server.extra ~= "" then
+            local minutes = tonumber(server.extra)
+            if minutes then
+                if titleText == "Full Moon" then
+                    displayTitle = "Full Moon End in " .. minutes .. " minutes"
+                elseif titleText == "Near Moon" then
+                    displayTitle = "Full Moon in " .. minutes .. " minutes"
+                else
+                    displayTitle = server.extra
+                end
+            else
+                displayTitle = server.extra
+            end
+        end
+        
         CreateServerCard(serverList, server, displayTitle)
     end
 end
@@ -188,26 +204,40 @@ local function CreateServerList(parent)
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH BUTTON (គ្មាន Emoji + Animation + ថ្លា)
+-- ⭐ CREATE REFRESH BUTTON (ដក Color + ដាក់ខាងឆ្វេង + កណ្ដាល)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
     local LastRefreshTime = 0
     local isCooldown = false
 
+    -- Button Container
+    local btnHolder = Instance.new("Frame")
+    btnHolder.Size = UDim2.new(1, 0, 0, 30)
+    btnHolder.BackgroundTransparency = 1
+    btnHolder.BorderSizePixel = 0
+    btnHolder.Parent = parent
+
     local refreshBtn = Instance.new("TextButton")
-    refreshBtn.Size = UDim2.new(1, 0, 0, 30)
+    refreshBtn.Size = UDim2.new(0, 150, 0, 30)
+    refreshBtn.Position = UDim2.new(0, 0, 0, 0)
     refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
-    refreshBtn.BackgroundTransparency = 0.6
+    refreshBtn.BackgroundTransparency = 1  -- ⭐ ដក Color ចេញ (ថ្លា)
     refreshBtn.Text = "Refresh Server"
     refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     refreshBtn.TextSize = 12
     refreshBtn.Font = Enum.Font.GothamBold
-    refreshBtn.Parent = parent
+    refreshBtn.Parent = btnHolder
 
     local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = refreshBtn
+
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(200, 200, 220)
+    btnStroke.Thickness = 1
+    btnStroke.Transparency = 0.5
+    btnStroke.Parent = refreshBtn
 
     -- Animation Slide
     local slide = Instance.new("Frame")
