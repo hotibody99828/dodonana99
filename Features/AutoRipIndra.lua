@@ -1,5 +1,5 @@
 -- ==================================================
--- AUTO RIP INDRA (ជាមួយ Config Save) - FIXED (NO BYPASS)
+-- AUTO RIP INDRA (SEA3) - NO CONFIG - TOGGLE FUNCTION
 -- ==================================================
 
 local Players = game:GetService("Players")
@@ -21,7 +21,7 @@ local PORTAL_ARGS = {"requestEntrance", Vector3.new(-4936.41162109375, 314.50201
 local TWEEN_SPEED = 200
 
 -- ==================================================
--- STATE
+-- STATE (No Config)
 -- ==================================================
 local isRunning = false
 local loopConnection = nil
@@ -500,11 +500,10 @@ local function ripIndraLoop()
 end
 
 -- ==================================================
--- TOGGLE FUNCTION
+-- ⭐ TOGGLE FUNCTION (No Config - Direct Toggle)
 -- ==================================================
 function _G.YOKUDO_ToggleAutoRipIndra()
     isRunning = not isRunning
-    _G.YOKUDO_AutoRipIndraEnabled = isRunning
     
     if isRunning then
         hasUsedPortal = false
@@ -553,29 +552,16 @@ function _G.YOKUDO_ToggleAutoRipIndra()
         print("⚡ Auto Rip Indra Stopped")
     end
     
-    -- Update UI
+    -- ⭐ Update UI (No Config)
     if _G.YOKUDO_UpdateUI_RipIndra then
         _G.YOKUDO_UpdateUI_RipIndra(isRunning)
     end
-    
-    -- Save Config
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoRipIndra", isRunning)
-    end
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
+-- STATE (No Config)
 -- ==================================================
-function _G.YOKUDO_SetRipIndra(enabled)
-    if enabled == isRunning then return end
-    _G.YOKUDO_ToggleAutoRipIndra()
-end
-
--- ==================================================
--- STATE
--- ==================================================
-_G.YOKUDO_AutoRipIndraEnabled = _G.YOKUDO_AutoRipIndraEnabled or false
+_G.YOKUDO_AutoRipIndraEnabled = false
 
 -- ==================================================
 -- CHARACTER RESPAWN HANDLER
@@ -590,4 +576,4 @@ Player.CharacterAdded:Connect(function()
     end
 end)
 
-print("✅ AutoRipIndra Loaded (Config Ready - With Set - No Bypass)")
+print("✅ AutoRipIndra Loaded (SEA3 - No Config - Toggle Function)")
