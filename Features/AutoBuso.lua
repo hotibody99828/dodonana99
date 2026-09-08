@@ -40,7 +40,7 @@ local function TurnOnBuso()
 end
 
 -- ==================================================
--- START AUTO BUSO
+-- ⭐ START AUTO BUSO (Public - ហៅពី CharacterHandler បាន)
 -- ==================================================
 function startAutoBuso()
     if _G.YOKUDO_BusoLoopConnection then return end
@@ -66,7 +66,7 @@ function startAutoBuso()
 end
 
 -- ==================================================
--- STOP AUTO BUSO
+-- ⭐ STOP AUTO BUSO (Public - ហៅពី CharacterHandler បាន)
 -- ==================================================
 function stopAutoBuso()
     if _G.YOKUDO_BusoLoopConnection then 
@@ -100,13 +100,13 @@ function _G.YOKUDO_ToggleAutoBuso()
 end
 
 -- ==================================================
--- ⭐ AUTO START (ចាប់ផ្ដើមភ្លាមៗ)
+-- ⭐ AUTO START (ចាប់ផ្ដើមភ្លាមៗ ដោយស្វ័យប្រវត្តិ)
 -- ==================================================
 task.spawn(function()
     -- រង់ចាំ Character Loaded
     repeat task.wait() until Player.Local and Player.Local.Character and Player.Local.Character:FindFirstChild("HumanoidRootPart")
     
-    -- ចាប់ផ្ដើម Auto Buso
+    -- ចាប់ផ្ដើម Auto Buso ដោយស្វ័យប្រវត្តិ
     if _G.YOKUDO_BusoEnabled then
         startAutoBuso()
         print("✅ Auto Buso started automatically (ON)")
