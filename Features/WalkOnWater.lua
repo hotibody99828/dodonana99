@@ -1,5 +1,5 @@
 -- ==================================================
--- WALK ON WATER (SEA3) - ជាមួយ Config Save
+-- WALK ON WATER (SEA3) - NO CONFIG
 -- ==================================================
 
 local Y = _G.Y
@@ -78,36 +78,28 @@ function disableWalkOnWater()
 end
 
 -- ==================================================
--- SET FUNCTION (សម្រាប់ Config Load)
+-- TOGGLE FUNCTION (គ្មាន Config)
 -- ==================================================
-function _G.YOKUDO_SetWalk(enabled)
-    if enabled == _G.YOKUDO_WalkEnabled then return end
+function _G.YOKUDO_ToggleWalkOnWater()
+    _G.YOKUDO_WalkEnabled = not _G.YOKUDO_WalkEnabled
     
-    _G.YOKUDO_WalkEnabled = enabled
-    if enabled then
+    if _G.YOKUDO_WalkEnabled then
         enableWalkOnWater()
-        print("✅ Walk on Water: ON (Config)")
+        print("✅ Walk on Water: ON")
     else
         disableWalkOnWater()
-        print("❌ Walk on Water: OFF (Config)")
+        print("❌ Walk on Water: OFF")
     end
     
     -- Update UI
     if _G.YOKUDO_UpdateUI_Walk then
-        _G.YOKUDO_UpdateUI_Walk(enabled)
-    end
-    
-    -- Save Config
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("WalkOnWater", enabled)
+        _G.YOKUDO_UpdateUI_Walk(_G.YOKUDO_WalkEnabled)
     end
 end
 
 -- ==================================================
--- TOGGLE FUNCTION (សម្រាប់ User Click)
+-- STATE
 -- ==================================================
-function _G.YOKUDO_ToggleWalkOnWater()
-    _G.YOKUDO_SetWalk(not _G.YOKUDO_WalkEnabled)
-end
+_G.YOKUDO_WalkEnabled = false
 
-print("✅ WalkOnWater Loaded (Config Ready)")
+print("✅ WalkOnWater Loaded (SEA3 - No Config)")
