@@ -1,5 +1,5 @@
 -- ==================================================
--- AUTO ELITE HUNTER (ជាមួយ Config Save) - FULL WITH SET + DELETE OBSTACLES
+-- AUTO ELITE HUNTER (SEA3) - NO CONFIG - TOGGLE FUNCTION + DELETE OBSTACLES
 -- ==================================================
 
 local Players = game:GetService("Players")
@@ -45,24 +45,7 @@ local PORTAL_ARGS = {
 local TWEEN_SPEED = 150
 
 -- ==================================================
--- ⭐ OBSTACLES TO DELETE (WATERFALL)
--- ==================================================
-local OBSTACLES_TO_DELETE = {
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E.rock3",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[95]",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[14].rock2",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E.rock3",
-    "workspace.Map.Waterfall.IslandModel:GetChildren()[45]['Meshes/mountainfixes_Sphere.037']",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[97]",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[96]",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[71]",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[97]",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.D['Meshes/amazonfixes2_Sphere.069']",
-    "workspace.Map.Waterfall.IslandModel.IslandChunks.E:GetChildren()[104]",
-}
-
--- ==================================================
--- ⭐ DELETE OBSTACLES FUNCTION
+-- ⭐ DELETE OBSTACLES FUNCTION (WATERFALL)
 -- ==================================================
 local function deleteObstacles()
     pcall(function()
@@ -100,14 +83,10 @@ local function deleteObstacles()
                 -- Delete by index
                 local indicesToDelete = {95, 97, 96, 71, 104}
                 for _, idx in ipairs(indicesToDelete) do
-                    local child = E:FindChild(tostring(idx)) or E:FindFirstChild(string.gsub("[" .. idx .. "]", "[%[%]]", ""))
-                    if child then
-                        -- Try to find by exact index in children
-                        local childrenList = E:GetChildren()
-                        if childrenList and childrenList[idx] then
-                            childrenList[idx]:Destroy()
-                            print("🗑️ Deleted: GetChildren()[" .. idx .. "]")
-                        end
+                    local childrenList = E:GetChildren()
+                    if childrenList and childrenList[idx] then
+                        childrenList[idx]:Destroy()
+                        print("🗑️ Deleted: GetChildren()[" .. idx .. "]")
                     end
                 end
             end
@@ -158,7 +137,7 @@ local function deleteObstaclesWithRetry()
 end
 
 -- ==================================================
--- STATE
+-- STATE (No Config)
 -- ==================================================
 local isRunning = false
 local loopConnection = nil
@@ -672,11 +651,10 @@ local function eliteHunterLoop()
 end
 
 -- ==================================================
--- TOGGLE FUNCTION
+-- ⭐ TOGGLE FUNCTION (No Config - Direct Toggle)
 -- ==================================================
 function _G.YOKUDO_ToggleAutoEliteHunter()
     isRunning = not isRunning
-    _G.YOKUDO_AutoEliteHunterEnabled = isRunning
     
     if isRunning then
         obstaclesDeleted = false
@@ -726,29 +704,16 @@ function _G.YOKUDO_ToggleAutoEliteHunter()
         print("❌ Auto Elite Hunter Stopped")
     end
     
-    -- Update UI
+    -- ⭐ Update UI (No Config)
     if _G.YOKUDO_UpdateUI_EliteHunter then
         _G.YOKUDO_UpdateUI_EliteHunter(isRunning)
     end
-    
-    -- Save Config
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoEliteHunter", isRunning)
-    end
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
+-- STATE (No Config)
 -- ==================================================
-function _G.YOKUDO_SetEliteHunter(enabled)
-    if enabled == isRunning then return end
-    _G.YOKUDO_ToggleAutoEliteHunter()
-end
-
--- ==================================================
--- STATE
--- ==================================================
-_G.YOKUDO_AutoEliteHunterEnabled = _G.YOKUDO_AutoEliteHunterEnabled or false
+_G.YOKUDO_AutoEliteHunterEnabled = false
 
 -- ==================================================
 -- CHARACTER RESPAWN HANDLER
@@ -762,4 +727,4 @@ Player.CharacterAdded:Connect(function()
     end
 end)
 
-print("✅ AutoEliteHunter Loaded (Config Ready - Invoke 2x - With Set + Delete Obstacles)")
+print("✅ AutoEliteHunter Loaded (SEA3 - No Config - Toggle Function + Delete Obstacles)")
