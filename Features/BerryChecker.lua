@@ -13,10 +13,21 @@ local function LoadDataFromVPS(type)
                 Url = VPS_URL .. "/api/data/" .. type,
                 Method = "GET"
             })
+            
+            -- ⭐ បន្ថែម Print ដើម្បីពិនិត្យ
+            print("🔍 Loading: " .. type)
+            print("🔍 Status: " .. tostring(response.StatusCode))
+            print("🔍 Body: " .. tostring(response.Body))
+            
             if response and response.StatusCode == 200 then
                 local data = HttpService:JSONDecode(response.Body)
+                print("🔍 Count: " .. tostring(#(data.servers or {})))
                 return data.servers or {}
+            else
+                print("❌ Error: Status Code " .. tostring(response.StatusCode))
             end
+        else
+            print("❌ No requestFunc found!")
         end
     end)
     return {}
