@@ -6,7 +6,7 @@ local HttpService = game:GetService("HttpService")
 local VPS_URL = "http://217.216.73.147:3000"
 
 local function LoadDataFromVPS(type)
-    pcall(function()
+    local success, result = pcall(function()
         local url = VPS_URL .. "/api/data/" .. type
         local response = game:HttpGet(url)
         
@@ -19,9 +19,17 @@ local function LoadDataFromVPS(type)
             return data.servers or {}
         else
             print("❌ Empty response!")
+            return {}
         end
     end)
-    return {}
+    
+    if success then
+        print("✅ LoadDataFromVPS returned: " .. tostring(#result) .. " servers")
+        return result or {}
+    else
+        print("❌ Error: " .. tostring(result))
+        return {}
+    end
 end
 
 local function MaskJobId(jobId)
@@ -118,6 +126,9 @@ local function CreateServerCard(parent, data, titleText)
 end
 
 local function UpdateServerList(serverList, servers, titleText)
+    print("🔍 UpdateServerList called!")
+    print("🔍 Servers count: " .. tostring(#servers))
+    
     for _, child in ipairs(serverList:GetChildren()) do
         if child:IsA("Frame") then child:Destroy() end
     end
@@ -127,6 +138,7 @@ local function UpdateServerList(serverList, servers, titleText)
     end)
 
     if #servers == 0 then
+        print("❌ No servers to display!")
         local emptyLabel = Instance.new("TextLabel")
         emptyLabel.Size = UDim2.new(1, 0, 0, 30)
         emptyLabel.BackgroundTransparency = 1
@@ -138,6 +150,8 @@ local function UpdateServerList(serverList, servers, titleText)
         return
     end
 
+    print("✅ Displaying " .. tostring(#servers) .. " servers!")
+    
     for i, server in ipairs(servers) do
         CreateServerCard(serverList, server, titleText)
     end
