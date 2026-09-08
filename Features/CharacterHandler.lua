@@ -1,5 +1,5 @@
 -- ==================================================
--- CHARACTER RESPAWN HANDLER (SEA3) - FIXED
+-- CHARACTER RESPAWN HANDLER (SEA3) - NO CONFIG
 -- ==================================================
 
 local Player = _G.YOKUDO.Player
@@ -21,114 +21,128 @@ Player.OnCharacterAdded(function()
         end
     end
     
-    -- ⭐ Auto Buso (ប្រើ Set មិនមែន Toggle)
+    -- ⭐ Auto Buso
     if _G.YOKUDO_BusoEnabled then
-        if _G.YOKUDO_SetBuso then
-            _G.YOKUDO_SetBuso(true)
+        if _G.YOKUDO_ToggleAutoBuso then
+            _G.YOKUDO_ToggleAutoBuso()
         end
     end
     
-    -- ⭐ Walk on Water (ប្រើ Set មិនមែន Toggle)
+    -- ⭐ Walk on Water
     if _G.YOKUDO_WalkEnabled then
-        if _G.YOKUDO_SetWalk then
-            _G.YOKUDO_SetWalk(true)
+        if _G.YOKUDO_ToggleWalkOnWater then
+            _G.YOKUDO_ToggleWalkOnWater()
         end
     end
     
     -- ==============================================
-    -- ⭐ AUTO RIP INDRA (ប្រើ Set មិនមែន Toggle)
+    -- AUTO BOSS FEATURES
     -- ==============================================
-    if _G.YOKUDO_AutoRipIndraEnabled then
-        task.spawn(function()
-            -- ពិនិត្យ workspace.Enemies["rip_indra True Form"] ភ្លាមៗ
-            local enemies = workspace:FindFirstChild("Enemies")
-            if enemies then
-                local boss = enemies:FindFirstChild("rip_indra True Form")
-                if boss and boss:FindFirstChild("Humanoid") then
-                    local humanoid = boss.Humanoid
-                    if humanoid.Health > 0 then
-                        local bossRoot = boss:FindFirstChild("HumanoidRootPart") or boss:FindFirstChild("Torso")
-                        if bossRoot then
-                            if _G.YOKUDO_TweenToBoss and _G.YOKUDO_AttackTarget then
-                                _G.YOKUDO_TweenToBoss(bossRoot.Position, 200)
-                                _G.YOKUDO_AttackTarget(boss)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
     
-    -- ==============================================
-    -- ⭐ AUTO SOUL REAPER (ប្រើ Set មិនមែន Toggle)
-    -- ==============================================
-    if _G.YOKUDO_AutoSoulReaperEnabled then
-        task.spawn(function()
-            local enemies = workspace:FindFirstChild("Enemies")
-            if enemies then
-                local boss = enemies:FindFirstChild("Soul Reaper")
-                if boss and boss:FindFirstChild("Humanoid") then
-                    local humanoid = boss.Humanoid
-                    if humanoid.Health > 0 then
-                        local bossRoot = boss:FindFirstChild("HumanoidRootPart") or boss:FindFirstChild("Torso")
-                        if bossRoot then
-                            if _G.YOKUDO_TweenToBoss and _G.YOKUDO_AttackTarget then
-                                _G.YOKUDO_TweenToBoss(bossRoot.Position, 190)
-                                _G.YOKUDO_AttackTarget(boss)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
-    
-    -- ==============================================
-    -- ⭐ AUTO DOUGH KING (ប្រើ Set មិនមែន Toggle)
-    -- ==============================================
+    -- Auto Dough King
     if _G.YOKUDO_AutoDoughKingEnabled then
-        if _G.YOKUDO_SetDoughKing then
-            _G.YOKUDO_SetDoughKing(true)
+        if _G.YOKUDO_ToggleAutoDoughKing then
+            _G.YOKUDO_ToggleAutoDoughKing()
         end
     end
     
-    -- ==============================================
-    -- ⭐ AUTO CAKE PRINCE (ប្រើ Set មិនមែន Toggle)
-    -- ==============================================
+    -- Auto Rip Indra
+    if _G.YOKUDO_AutoRipIndraEnabled then
+        if _G.YOKUDO_ToggleAutoRipIndra then
+            _G.YOKUDO_ToggleAutoRipIndra()
+        end
+    end
+    
+    -- Auto Cake Prince
     if _G.YOKUDO_AutoCakePrinceEnabled then
-        if _G.YOKUDO_SetCakePrince then
-            _G.YOKUDO_SetCakePrince(true)
+        if _G.YOKUDO_ToggleAutoCakePrince then
+            _G.YOKUDO_ToggleAutoCakePrince()
         end
     end
     
-    -- ==============================================
-    -- ⭐ AUTO ELITE HUNTER (ប្រើ Set មិនមែន Toggle)
-    -- ==============================================
+    -- Auto Soul Reaper
+    if _G.YOKUDO_AutoSoulReaperEnabled then
+        if _G.YOKUDO_ToggleAutoSoulReaper then
+            _G.YOKUDO_ToggleAutoSoulReaper()
+        end
+    end
+    
+    -- Auto Elite Hunter
     if _G.YOKUDO_AutoEliteHunterEnabled then
-        if _G.YOKUDO_SetEliteHunter then
-            _G.YOKUDO_SetEliteHunter(true)
+        if _G.YOKUDO_ToggleAutoEliteHunter then
+            _G.YOKUDO_ToggleAutoEliteHunter()
         end
     end
     
     -- ==============================================
-    -- ⭐ AUTO CLICK ATTACK (ប្រើ Set មិនមែន Toggle)
+    -- AUTO ABILITIES
+    -- ==============================================
+    
+    -- Auto Ken
+    if _G.YOKUDO_ObservationEnabled then
+        if _G.YOKUDO_ToggleAutoKen then
+            _G.YOKUDO_ToggleAutoKen()
+        end
+    end
+    
+    -- ==============================================
+    -- AUTO CLICK ATTACK
     -- ==============================================
     if _G.YOKUDO_AutoClickAttackEnabled then
-        if _G.YOKUDO_SetClickAttack then
-            _G.YOKUDO_SetClickAttack(true)
+        if _G.YOKUDO_ToggleAutoClickAttack then
+            _G.YOKUDO_ToggleAutoClickAttack()
         end
     end
     
     -- ==============================================
-    -- ⭐ AUTO UNLOCK HAKI (ប្រើ Set មិនមែន Toggle)
+    -- SHOP FEATURES
     -- ==============================================
+    
+    -- Auto Unlock Haki
     if _G.YOKUDO_AutoUnlockHakiEnabled then
-        if _G.YOKUDO_SetUnlockHaki then
-            _G.YOKUDO_SetUnlockHaki(true)
+        if _G.YOKUDO_ToggleAutoUnlockHaki then
+            _G.YOKUDO_ToggleAutoUnlockHaki()
         end
     end
     
+    -- ==============================================
+    -- AUTO HOP FEATURES
+    -- ==============================================
+    
+    -- Auto Hop Dough King
+    if _G.YOKUDO_AutoHopDoughKingEnabled then
+        if _G.YOKUDO_ToggleAutoHopDoughKing then
+            _G.YOKUDO_ToggleAutoHopDoughKing()
+        end
+    end
+    
+    -- Auto Hop Rip Indra
+    if _G.YOKUDO_AutoHopRipIndraEnabled then
+        if _G.YOKUDO_ToggleAutoHopRipIndra then
+            _G.YOKUDO_ToggleAutoHopRipIndra()
+        end
+    end
+    
+    -- Auto Hop Cake Prince
+    if _G.YOKUDO_AutoHopCakePrinceEnabled then
+        if _G.YOKUDO_ToggleAutoHopCakePrince then
+            _G.YOKUDO_ToggleAutoHopCakePrince()
+        end
+    end
+    
+    -- Auto Hop Soul Reaper
+    if _G.YOKUDO_AutoHopSoulReaperEnabled then
+        if _G.YOKUDO_ToggleAutoHopSoulReaper then
+            _G.YOKUDO_ToggleAutoHopSoulReaper()
+        end
+    end
+    
+    -- Auto Hop Elite Hunter
+    if _G.YOKUDO_AutoHopEliteHunterEnabled then
+        if _G.YOKUDO_ToggleAutoHopEliteHunter then
+            _G.YOKUDO_ToggleAutoHopEliteHunter()
+        end
+    end
 end)
 
-print("✅ CharacterHandler Loaded (FIXED - Using Set Functions)")
+print("✅ CharacterHandler Loaded (SEA3 - No Config)")
