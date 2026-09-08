@@ -7,27 +7,18 @@ local VPS_URL = "http://217.216.73.147:3000"
 
 local function LoadDataFromVPS(type)
     pcall(function()
-        local requestFunc = syn and syn.request or http and http.request or request
-        if requestFunc then
-            local response = requestFunc({
-                Url = VPS_URL .. "/api/data/" .. type,
-                Method = "GET"
-            })
-            
-            -- ⭐ បន្ថែម Print ដើម្បីពិនិត្យ
-            print("🔍 Loading: " .. type)
-            print("🔍 Status: " .. tostring(response.StatusCode))
-            print("🔍 Body: " .. tostring(response.Body))
-            
-            if response and response.StatusCode == 200 then
-                local data = HttpService:JSONDecode(response.Body)
-                print("🔍 Count: " .. tostring(#(data.servers or {})))
-                return data.servers or {}
-            else
-                print("❌ Error: Status Code " .. tostring(response.StatusCode))
-            end
+        local url = VPS_URL .. "/api/data/" .. type
+        local response = game:HttpGet(url)
+        
+        print("🔍 Loading: " .. type)
+        print("🔍 Response: " .. tostring(response))
+        
+        if response and response ~= "" then
+            local data = HttpService:JSONDecode(response)
+            print("🔍 Count: " .. tostring(#(data.servers or {})))
+            return data.servers or {}
         else
-            print("❌ No requestFunc found!")
+            print("❌ Empty response!")
         end
     end)
     return {}
