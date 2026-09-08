@@ -167,8 +167,10 @@ local function UpdateServerList(serverList, servers, titleText)
         return
     end
 
+    -- ⭐ ប្រើ server.extra ជា Title (បើមាន)
     for i, server in ipairs(servers) do
-        CreateServerCard(serverList, server, titleText)
+        local displayTitle = server.extra and server.extra ~= "" and server.extra or titleText
+        CreateServerCard(serverList, server, displayTitle)
     end
 end
 
@@ -195,7 +197,7 @@ local function CreateServerList(parent)
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH BUTTON (គ្មាន Emoji + Animation)
+-- ⭐ CREATE REFRESH BUTTON (គ្មាន Emoji + Animation + ថ្លា)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
@@ -205,6 +207,7 @@ local function CreateRefreshBtn(parent, type, titleText)
     local refreshBtn = Instance.new("TextButton")
     refreshBtn.Size = UDim2.new(1, 0, 0, 30)
     refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
+    refreshBtn.BackgroundTransparency = 0.6  -- ⭐ ថ្លាជាងមុន
     refreshBtn.Text = "Refresh Server"
     refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     refreshBtn.TextSize = 12
