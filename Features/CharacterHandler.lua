@@ -1,5 +1,5 @@
 -- ==================================================
--- CHARACTER RESPAWN HANDLER (SEA3) - NO CONFIG
+-- CHARACTER RESPAWN HANDLER (SEA3) - NO CONFIG - FIXED
 -- ==================================================
 
 local Player = _G.YOKUDO.Player
@@ -21,22 +21,22 @@ Player.OnCharacterAdded(function()
         end
     end
     
-    -- ⭐ Auto Buso
+    -- ⭐ Auto Buso (ហៅ startAutoBuso ត្រង់ៗ - មិនប្រើ Toggle)
     if _G.YOKUDO_BusoEnabled then
-        if _G.YOKUDO_ToggleAutoBuso then
-            _G.YOKUDO_ToggleAutoBuso()
+        if startAutoBuso then
+            startAutoBuso()
         end
     end
     
-    -- ⭐ Walk on Water
+    -- ⭐ Walk on Water (ហៅ enableWalkOnWater ត្រង់ៗ - មិនប្រើ Toggle)
     if _G.YOKUDO_WalkEnabled then
-        if _G.YOKUDO_ToggleWalkOnWater then
-            _G.YOKUDO_ToggleWalkOnWater()
+        if enableWalkOnWater then
+            enableWalkOnWater()
         end
     end
     
     -- ==============================================
-    -- AUTO BOSS FEATURES
+    -- AUTO BOSS FEATURES (ប្រើ Toggle Function)
     -- ==============================================
     
     -- Auto Dough King
@@ -145,4 +145,4 @@ Player.OnCharacterAdded(function()
     end
 end)
 
-print("✅ CharacterHandler Loaded (SEA3 - No Config)")
+print("✅ CharacterHandler Loaded (SEA3 - No Config - Fixed)")
