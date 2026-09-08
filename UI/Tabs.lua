@@ -1,5 +1,5 @@
 -- ==================================================
--- TABS (SEA3) + SMART CHECKBOX
+-- TABS (SEA3) + SMART CHECKBOX (NO CONFIG)
 -- ==================================================
 
 local Y = _G.Y
@@ -256,23 +256,19 @@ CreateRefreshButton(FruitPage, 1)
 CreateRefreshButton(BerryPage, 1)
 
 -- ==================================================
--- SHOP TAB
+-- SHOP TAB (NO CONFIG)
 -- ==================================================
 CreateSectionTitle(ShopPage, "Shop", 1)
 
--- ⭐ Auto Unlock Haki (Smart Checkbox)
+-- ⭐ Auto Unlock Haki (Smart Checkbox - ប្រើ ToggleFunction)
 local unlockHaki = CreateSmartCheckbox(
     ShopPage,
     "Auto Unlock Haki Legendary",
     2,
-    function(state)
-        if state and not _G.YOKUDO_AutoUnlockHakiEnabled then
-            _G.YOKUDO_ToggleAutoUnlockHaki()
-        elseif not state and _G.YOKUDO_AutoUnlockHakiEnabled then
-            _G.YOKUDO_ToggleAutoUnlockHaki()
-        end
+    function()  -- ToggleFunction
+        _G.YOKUDO_ToggleAutoUnlockHaki()
     end,
-    function()
+    function()  -- GetStateFunction
         return _G.YOKUDO_AutoUnlockHakiEnabled or false
     end
 )
@@ -394,22 +390,18 @@ jobIdTextBox.FocusLost:Connect(function(enterPressed)
 end)
 
 -- ==================================================
--- AUTO HOP TAB
+-- AUTO HOP TAB (NO CONFIG)
 -- ==================================================
 CreateSectionTitle(AutoHopPage, "Select Weapon for attack", 1)
 CreateWeaponDropdown(AutoHopPage, 2)
 
--- ⭐ Auto Click Attack (Smart Checkbox)
+-- ⭐ Auto Click Attack (Smart Checkbox - ប្រើ ToggleFunction)
 local clickAttack = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Click Attack",
     3,
-    function(state)
-        if state and not _G.YOKUDO_AutoClickAttackEnabled then
-            _G.YOKUDO_ToggleAutoClickAttack()
-        elseif not state and _G.YOKUDO_AutoClickAttackEnabled then
-            _G.YOKUDO_ToggleAutoClickAttack()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoClickAttack()
     end,
     function()
         return _G.YOKUDO_AutoClickAttackEnabled or false
@@ -423,17 +415,13 @@ end
 -- Farm Boss: Dough King
 CreateSectionTitle(AutoHopPage, "Farm Boss", 4)
 
--- ⭐ Auto Dough King (Smart Checkbox)
+-- ⭐ Auto Dough King (Smart Checkbox - ប្រើ ToggleFunction)
 local doughKing = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Dough King",
     5,
-    function(state)
-        if state and not _G.YOKUDO_AutoDoughKingEnabled then
-            _G.YOKUDO_ToggleAutoDoughKing()
-        elseif not state and _G.YOKUDO_AutoDoughKingEnabled then
-            _G.YOKUDO_ToggleAutoDoughKing()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoDoughKing()
     end,
     function()
         return _G.YOKUDO_AutoDoughKingEnabled or false
@@ -450,17 +438,13 @@ local hopDoughKingFrame, hopDoughKingCheckbox, getHopDoughKingState = CreateChec
 -- Farm Boss: Rip Indra
 CreateSectionTitle(AutoHopPage, "Farm Boss", 7)
 
--- ⭐ Auto Rip Indra (Smart Checkbox)
+-- ⭐ Auto Rip Indra (Smart Checkbox - ប្រើ ToggleFunction)
 local ripIndra = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Rip indra",
     8,
-    function(state)
-        if state and not _G.YOKUDO_AutoRipIndraEnabled then
-            _G.YOKUDO_ToggleAutoRipIndra()
-        elseif not state and _G.YOKUDO_AutoRipIndraEnabled then
-            _G.YOKUDO_ToggleAutoRipIndra()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoRipIndra()
     end,
     function()
         return _G.YOKUDO_AutoRipIndraEnabled or false
@@ -477,17 +461,13 @@ local hopRipIndraFrame, hopRipIndraCheckbox, getHopRipIndraState = CreateCheckbo
 -- Farm Boss: Cake Prince
 CreateSectionTitle(AutoHopPage, "Farm Boss", 10)
 
--- ⭐ Auto Cake Prince (Smart Checkbox)
+-- ⭐ Auto Cake Prince (Smart Checkbox - ប្រើ ToggleFunction)
 local cakePrince = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Cake Prince",
     11,
-    function(state)
-        if state and not _G.YOKUDO_AutoCakePrinceEnabled then
-            _G.YOKUDO_ToggleAutoCakePrince()
-        elseif not state and _G.YOKUDO_AutoCakePrinceEnabled then
-            _G.YOKUDO_ToggleAutoCakePrince()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoCakePrince()
     end,
     function()
         return _G.YOKUDO_AutoCakePrinceEnabled or false
@@ -504,17 +484,13 @@ local hopCakePrinceFrame, hopCakePrinceCheckbox, getHopCakePrinceState = CreateC
 -- Farm Boss: Soul Reaper
 CreateSectionTitle(AutoHopPage, "Farm Boss", 13)
 
--- ⭐ Auto Soul Reaper (Smart Checkbox)
+-- ⭐ Auto Soul Reaper (Smart Checkbox - ប្រើ ToggleFunction)
 local soulReaper = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Soul Reaper",
     14,
-    function(state)
-        if state and not _G.YOKUDO_AutoSoulReaperEnabled then
-            _G.YOKUDO_ToggleAutoSoulReaper()
-        elseif not state and _G.YOKUDO_AutoSoulReaperEnabled then
-            _G.YOKUDO_ToggleAutoSoulReaper()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoSoulReaper()
     end,
     function()
         return _G.YOKUDO_AutoSoulReaperEnabled or false
@@ -531,17 +507,13 @@ local hopSoulReaperFrame, hopSoulReaperCheckbox, getHopSoulReaperState = CreateC
 -- Farm Boss: Elite Hunter
 CreateSectionTitle(AutoHopPage, "Farm Boss", 16)
 
--- ⭐ Auto Elite Hunter (Smart Checkbox)
+-- ⭐ Auto Elite Hunter (Smart Checkbox - ប្រើ ToggleFunction)
 local eliteHunter = CreateSmartCheckbox(
     AutoHopPage,
     "Auto Elite Hunter",
     17,
-    function(state)
-        if state and not _G.YOKUDO_AutoEliteHunterEnabled then
-            _G.YOKUDO_ToggleAutoEliteHunter()
-        elseif not state and _G.YOKUDO_AutoEliteHunterEnabled then
-            _G.YOKUDO_ToggleAutoEliteHunter()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoEliteHunter()
     end,
     function()
         return _G.YOKUDO_AutoEliteHunterEnabled or false
@@ -589,7 +561,7 @@ hopEliteHunterCheckbox.MouseButton1Click:Connect(function()
 end)
 
 -- ==================================================
--- SETTING TAB
+-- SETTING TAB (NO CONFIG)
 -- ==================================================
 CreateSectionTitle(SettingPage, "Tween Settings", 1)
 CreateStopTweenButton(SettingPage, 2)
@@ -599,17 +571,13 @@ local noClipFrame, noClipCheckbox, getNoClipState = CreateCheckbox(SettingPage, 
 
 CreateSectionTitle(SettingPage, "Auto Abilities", 5)
 
--- ⭐ Auto Buso (Smart Checkbox)
+-- ⭐ Auto Buso (Smart Checkbox - ប្រើ ToggleFunction)
 local buso = CreateSmartCheckbox(
     SettingPage,
     "Auto Buso",
     6,
-    function(state)
-        if state and not _G.YOKUDO_BusoEnabled then
-            _G.YOKUDO_ToggleAutoBuso()
-        elseif not state and _G.YOKUDO_BusoEnabled then
-            _G.YOKUDO_ToggleAutoBuso()
-        end
+    function()
+        _G.YOKUDO_ToggleAutoBuso()
     end,
     function()
         return _G.YOKUDO_BusoEnabled or false
@@ -627,17 +595,13 @@ CreateSectionTitle(SettingPage, "Movement Hacks", 8)
 local jumpHolder, jumpCheckbox, getJumpState, jumpTextBox, getJumpValue = CreateTextBoxWithCheckbox(SettingPage, "Jump Hack", 9)
 local speedHolder, speedCheckbox, getSpeedState, speedTextBox, getSpeedValue = CreateTextBoxWithCheckbox(SettingPage, "Speed Hack", 10)
 
--- ⭐ Walk on Water (Smart Checkbox)
+-- ⭐ Walk on Water (Smart Checkbox - ប្រើ ToggleFunction)
 local walk = CreateSmartCheckbox(
     SettingPage,
     "Walk on Water",
     11,
-    function(state)
-        if state and not _G.YOKUDO_WalkEnabled then
-            _G.YOKUDO_ToggleWalkOnWater()
-        elseif not state and _G.YOKUDO_WalkEnabled then
-            _G.YOKUDO_ToggleWalkOnWater()
-        end
+    function()
+        _G.YOKUDO_ToggleWalkOnWater()
     end,
     function()
         return _G.YOKUDO_WalkEnabled or false
@@ -669,4 +633,4 @@ end)
 
 _G.YOKUDO_AutoHopPage = AutoHopPage
 
-print("✅ Tabs Loaded")
+print("✅ Tabs Loaded (SEA3 - No Config)")
