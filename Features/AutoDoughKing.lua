@@ -1,5 +1,5 @@
 -- ==================================================
--- AUTO DOUGH KING (ជាមួយ Config Save) - WITH SET
+-- AUTO DOUGH KING (SEA3) - NO CONFIG - USES TOGGLE FUNCTION
 -- ==================================================
 
 local Players = game:GetService("Players")
@@ -21,7 +21,7 @@ local DOUGH_KING_POSITION = Vector3.new(-2157, 160, -12400)
 local TWEEN_SPEED = 200
 
 -- ==================================================
--- STATE
+-- STATE (No Config - Direct Toggle)
 -- ==================================================
 local isRunning = false
 local loopConnection = nil
@@ -400,11 +400,10 @@ local function doughKingLoop()
 end
 
 -- ==================================================
--- TOGGLE FUNCTION
+-- ⭐ TOGGLE FUNCTION (No Config - Direct Toggle)
 -- ==================================================
 function _G.YOKUDO_ToggleAutoDoughKing()
     isRunning = not isRunning
-    _G.YOKUDO_AutoDoughKingEnabled = isRunning
     
     if isRunning then
         hasBypassTeleported = false
@@ -450,27 +449,16 @@ function _G.YOKUDO_ToggleAutoDoughKing()
         print("🍩 Auto Dough King Stopped")
     end
     
+    -- ⭐ Update UI (No Config - Just Toggle)
     if _G.YOKUDO_UpdateUI_DoughKing then
         _G.YOKUDO_UpdateUI_DoughKing(isRunning)
     end
-    
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoDoughKing", isRunning)
-    end
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
+-- STATE (No Config - Just isRunning)
 -- ==================================================
-function _G.YOKUDO_SetDoughKing(enabled)
-    if enabled == isRunning then return end
-    _G.YOKUDO_ToggleAutoDoughKing()
-end
-
--- ==================================================
--- STATE
--- ==================================================
-_G.YOKUDO_AutoDoughKingEnabled = _G.YOKUDO_AutoDoughKingEnabled or false
+_G.YOKUDO_AutoDoughKingEnabled = false
 
 -- ==================================================
 -- CHARACTER RESPAWN HANDLER
@@ -484,4 +472,4 @@ Player.CharacterAdded:Connect(function()
     end
 end)
 
-print("✅ AutoDoughKing Loaded (Config Ready - With Set)")
+print("✅ AutoDoughKing Loaded (SEA3 - No Config - Toggle Function)")
