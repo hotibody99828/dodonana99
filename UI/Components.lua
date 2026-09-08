@@ -1,5 +1,5 @@
 -- ==================================================
--- UI COMPONENTS (SEA3) + SMART CHECKBOX
+-- UI COMPONENTS (SEA3) + SMART CHECKBOX (NO CONFIG)
 -- ==================================================
 
 local Y = _G.Y
@@ -701,9 +701,9 @@ function AddFeaturesSoon(Page)
 end
 
 -- ==================================================
--- ⭐ SMART CHECKBOX (ភ្ជាប់ជាមួយ Config)
+-- ⭐ SMART CHECKBOX (NO CONFIG - ប្រើ Toggle Function)
 -- ==================================================
-function CreateSmartCheckbox(Parent, LabelText, Order, SetFunction, GetStateFunction)
+function CreateSmartCheckbox(Parent, LabelText, Order, ToggleFunction, GetStateFunction)
     local Holder = Instance.new("Frame")
     Holder.Size = UDim2.new(1, 0, 0, 32)
     Holder.BackgroundTransparency = 1
@@ -764,12 +764,12 @@ function CreateSmartCheckbox(Parent, LabelText, Order, SetFunction, GetStateFunc
     end
 
     Button.MouseButton1Click:Connect(function()
-        if SetFunction then
+        if ToggleFunction then
             local currentState = GetStateFunction and GetStateFunction() or Enabled
             local newState = not currentState
             UpdateUI(newState)
             task.spawn(function()
-                SetFunction(newState)
+                ToggleFunction()
             end)
         end
     end)
@@ -805,7 +805,7 @@ function CreateSmartCheckbox(Parent, LabelText, Order, SetFunction, GetStateFunc
 end
 
 -- ==================================================
--- ⭐ UPDATE WEAPON BUTTON (សម្រាប់ Config Load)
+-- ⭐ UPDATE WEAPON BUTTON (សម្រាប់ UI Update)
 -- ==================================================
 function _G.YOKUDO_UpdateWeaponButton(weaponType)
     if not _G.YOKUDO_AutoHopPage then return end
@@ -818,4 +818,4 @@ function _G.YOKUDO_UpdateWeaponButton(weaponType)
     end
 end
 
-print("✅ Components Loaded")
+print("✅ Components Loaded (SEA3 - No Config)")
