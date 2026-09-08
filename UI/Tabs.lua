@@ -13,10 +13,10 @@ local HttpService = game:GetService("HttpService")
 local VPS_URL = "http://217.216.73.147:3000"
 
 -- ==================================================
--- ⭐ LOAD DATA FROM VPS (ប្រើ game:HttpGet)
+-- ⭐ LOAD DATA FROM VPS (ប្រើ game:HttpGet + pcall)
 -- ==================================================
 local function LoadDataFromVPS(type)
-    pcall(function()
+    local success, result = pcall(function()
         local url = VPS_URL .. "/api/data/" .. type
         local response = game:HttpGet(url)
         
@@ -29,9 +29,16 @@ local function LoadDataFromVPS(type)
             return data.servers or {}
         else
             print("❌ Empty response!")
+            return {}
         end
     end)
-    return {}
+    
+    if success then
+        return result or {}
+    else
+        print("❌ Error: " .. tostring(result))
+        return {}
+    end
 end
 
 -- ==================================================
@@ -151,19 +158,21 @@ end
 -- ⭐ UPDATE SERVER LIST (បង្ហាញ Data ពី VPS)
 -- ==================================================
 local function UpdateServerList(serverList, servers, titleText)
-    -- សម្អាតចាស់
+    print("🔍 UpdateServerList called!")
+    print("🔍 Servers count: " .. tostring(#servers))
+    
     for _, child in ipairs(serverList:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
         end
     end
     
-    -- តម្រៀបតាម Age (តិចបំផុតនៅខាងលើ)
     table.sort(servers, function(a, b)
         return a.age < b.age
     end)
     
     if #servers == 0 then
+        print("❌ No servers to display!")
         local emptyLabel = Instance.new("TextLabel")
         emptyLabel.Size = UDim2.new(1, 0, 0, 30)
         emptyLabel.BackgroundTransparency = 1
@@ -174,8 +183,9 @@ local function UpdateServerList(serverList, servers, titleText)
         emptyLabel.Parent = serverList
         return
     end
+
+    print("✅ Displaying " .. tostring(#servers) .. " servers!")
     
-    -- បង្ហាញ Card នីមួយៗ
     for i, server in ipairs(servers) do
         CreateServerCard(serverList, server, titleText)
     end
