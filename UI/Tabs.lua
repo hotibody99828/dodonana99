@@ -20,15 +20,10 @@ local function LoadDataFromVPS(type)
         local url = VPS_URL .. "/api/data/" .. type
         local response = game:HttpGet(url)
         
-        print("🔍 Loading: " .. type)
-        print("🔍 Response: " .. tostring(response))
-        
         if response and response ~= "" then
             local data = HttpService:JSONDecode(response)
-            print("🔍 Count: " .. tostring(#(data.servers or {})))
             return data.servers or {}
         else
-            print("❌ Empty response!")
             return {}
         end
     end)
@@ -36,7 +31,6 @@ local function LoadDataFromVPS(type)
     if success then
         return result or {}
     else
-        print("❌ Error: " .. tostring(result))
         return {}
     end
 end
@@ -59,29 +53,29 @@ local function MaskJobId(jobId)
 end
 
 -- ==================================================
--- ⭐ CREATE SERVER CARD (តូចស្អាត)
+-- ⭐ CREATE SERVER CARD (ចុចលើ Card → Teleport)
 -- ==================================================
 local function CreateServerCard(parent, data, titleText)
-    -- Card Container
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, 0, 0, 90)
+    -- ប្ដូរពី Frame → TextButton ដើម្បីឲ្យចុចបានទាំងមូល
+    local card = Instance.new("TextButton")
+    card.Size = UDim2.new(1, 0, 0, 70)
     card.BackgroundColor3 = Color3.fromRGB(22, 23, 31)
     card.BorderSizePixel = 0
+    card.Text = ""
+    card.AutoButtonColor = false
     card.Parent = parent
-    
-    -- Corner
+
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = card
-    
-    -- Border
+
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(105, 90, 190)
     stroke.Thickness = 1
     stroke.Transparency = 0.3
     stroke.Parent = card
-    
-    -- Title (គ្មានលេខរៀង)
+
+    -- Title (Value ពី Server)
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, -20, 0, 20)
     title.Position = UDim2.new(0, 10, 0, 5)
@@ -92,7 +86,7 @@ local function CreateServerCard(parent, data, titleText)
     title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = card
-    
+
     -- Player Count
     local playerLabel = Instance.new("TextLabel")
     playerLabel.Size = UDim2.new(1, -20, 0, 16)
@@ -104,8 +98,8 @@ local function CreateServerCard(parent, data, titleText)
     playerLabel.Font = Enum.Font.GothamMedium
     playerLabel.TextXAlignment = Enum.TextXAlignment.Left
     playerLabel.Parent = card
-    
-    -- JobID (Mask - លាក់ពាក់កណ្ដាល)
+
+    -- JobID (Mask)
     local jobLabel = Instance.new("TextLabel")
     jobLabel.Size = UDim2.new(1, -20, 0, 16)
     jobLabel.Position = UDim2.new(0, 10, 0, 43)
@@ -117,7 +111,7 @@ local function CreateServerCard(parent, data, titleText)
     jobLabel.TextXAlignment = Enum.TextXAlignment.Left
     jobLabel.TextTruncate = Enum.TextTruncate.AtEnd
     jobLabel.Parent = card
-    
+
     -- Age (ពណ៌លឿង)
     local ageLabel = Instance.new("TextLabel")
     ageLabel.Size = UDim2.new(0, 60, 0, 16)
@@ -129,28 +123,23 @@ local function CreateServerCard(parent, data, titleText)
     ageLabel.Font = Enum.Font.GothamBold
     ageLabel.TextXAlignment = Enum.TextXAlignment.Right
     ageLabel.Parent = card
-    
-    -- Join Button
-    local joinBtn = Instance.new("TextButton")
-    joinBtn.Size = UDim2.new(0, 60, 0, 22)
-    joinBtn.Position = UDim2.new(1, -70, 0, 5)
-    joinBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
-    joinBtn.Text = "Join"
-    joinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    joinBtn.TextSize = 11
-    joinBtn.Font = Enum.Font.GothamBold
-    joinBtn.Parent = card
-    
-    local joinCorner = Instance.new("UICorner")
-    joinCorner.CornerRadius = UDim.new(0, 4)
-    joinCorner.Parent = joinBtn
-    
-    joinBtn.MouseButton1Click:Connect(function()
+
+    -- ⭐ ចុចលើ Card ទាំងមូល → Teleport
+    card.MouseButton1Click:Connect(function()
         if _G.YOKUDO_JoinServerByJobId then
             _G.YOKUDO_JoinServerByJobId(data.jobid)
         end
     end)
-    
+
+    -- Hover Effect
+    card.MouseEnter:Connect(function()
+        card.BackgroundColor3 = Color3.fromRGB(30, 32, 45)
+    end)
+
+    card.MouseLeave:Connect(function()
+        card.BackgroundColor3 = Color3.fromRGB(22, 23, 31)
+    end)
+
     return card
 end
 
@@ -158,21 +147,15 @@ end
 -- ⭐ UPDATE SERVER LIST (បង្ហាញ Data ពី VPS)
 -- ==================================================
 local function UpdateServerList(serverList, servers, titleText)
-    print("🔍 UpdateServerList called!")
-    print("🔍 Servers count: " .. tostring(#servers))
-    
     for _, child in ipairs(serverList:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
+        if child:IsA("TextButton") then child:Destroy() end
     end
-    
+
     table.sort(servers, function(a, b)
         return a.age < b.age
     end)
-    
+
     if #servers == 0 then
-        print("❌ No servers to display!")
         local emptyLabel = Instance.new("TextLabel")
         emptyLabel.Size = UDim2.new(1, 0, 0, 30)
         emptyLabel.BackgroundTransparency = 1
@@ -184,8 +167,6 @@ local function UpdateServerList(serverList, servers, titleText)
         return
     end
 
-    print("✅ Displaying " .. tostring(#servers) .. " servers!")
-    
     for i, server in ipairs(servers) do
         CreateServerCard(serverList, server, titleText)
     end
@@ -196,7 +177,7 @@ end
 -- ==================================================
 local function CreateServerList(parent)
     local serverList = Instance.new("ScrollingFrame")
-    serverList.Size = UDim2.new(1, 0, 0, 250)
+    serverList.Size = UDim2.new(1, 0, 0, 300)
     serverList.BackgroundTransparency = 1
     serverList.BorderSizePixel = 0
     serverList.ScrollBarThickness = 4
@@ -204,84 +185,85 @@ local function CreateServerList(parent)
     serverList.CanvasSize = UDim2.new(0, 0, 0, 0)
     serverList.AutomaticCanvasSize = Enum.AutomaticSize.Y
     serverList.Parent = parent
-    
+
     local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, 6)
+    listLayout.Padding = UDim.new(0, 4)
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
     listLayout.Parent = serverList
-    
+
     return serverList
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH BUTTON WITH COOLDOWN 5s
+-- ⭐ CREATE REFRESH BUTTON (គ្មាន Emoji + Animation)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
     local LastRefreshTime = 0
     local isCooldown = false
-    
+
     local refreshBtn = Instance.new("TextButton")
     refreshBtn.Size = UDim2.new(1, 0, 0, 30)
     refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
-    refreshBtn.Text = "🔄 Refresh Data"
+    refreshBtn.Text = "Refresh Server"
     refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     refreshBtn.TextSize = 12
     refreshBtn.Font = Enum.Font.GothamBold
     refreshBtn.Parent = parent
-    
+
     local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = refreshBtn
-    
-    -- Server List
+
+    -- Animation Slide
+    local slide = Instance.new("Frame")
+    slide.Size = UDim2.new(0, 0, 1, 0)
+    slide.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    slide.BackgroundTransparency = 0.7
+    slide.BorderSizePixel = 0
+    slide.Parent = refreshBtn
+
     local serverList = CreateServerList(parent)
-    
-    -- Update Refresh Button UI
-    local function UpdateRefreshButton()
-        if isCooldown then
-            refreshBtn.Text = "⏳ រង់ចាំ " .. CooldownTime .. "s"
-            refreshBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
-            refreshBtn.Active = false
-        else
-            refreshBtn.Text = "🔄 Refresh Data"
-            refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
-            refreshBtn.Active = true
-        end
+
+    -- Animation Function
+    local function PlaySlideAnimation()
+        slide.Size = UDim2.new(0, 0, 1, 0)
+        local tween = Y.TS:Create(slide, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(1, 0, 1, 0)
+        })
+        tween:Play()
+        tween.Completed:Wait()
+        slide.Size = UDim2.new(0, 0, 1, 0)
     end
-    
+
+    -- Cooldown (លាក់ - កុំឲ្យ User ឃើញ)
+    local function CheckCooldown()
+        return isCooldown
+    end
+
     -- Click Event
     refreshBtn.MouseButton1Click:Connect(function()
-        if isCooldown then return end
-        
-        -- ចាប់ផ្ដើម Cooldown
+        if CheckCooldown() then return end
+
         isCooldown = true
         LastRefreshTime = tick()
-        UpdateRefreshButton()
-        
-        -- ហៅ Load Data ពី VPS
+        PlaySlideAnimation()
+
         local servers = LoadDataFromVPS(type)
         UpdateServerList(serverList, servers, titleText)
-        
-        -- រាប់ថយក្រោយ
+
         task.spawn(function()
             while isCooldown do
                 local Elapsed = tick() - LastRefreshTime
-                local Remaining = math.ceil(CooldownTime - Elapsed)
-                
-                if Remaining <= 0 then
+                if Elapsed >= CooldownTime then
                     isCooldown = false
-                    UpdateRefreshButton()
                     break
-                else
-                    refreshBtn.Text = "⏳ រង់ចាំ " .. Remaining .. "s"
                 end
-                
                 task.wait(0.1)
             end
         end)
     end)
-    
+
     return refreshBtn, serverList
 end
 
