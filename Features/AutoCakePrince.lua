@@ -1,5 +1,5 @@
 -- ==================================================
--- AUTO CAKE PRINCE (ជាមួយ Config Save) - WITH SET
+-- AUTO CAKE PRINCE (SEA3) - NO CONFIG - TOGGLE FUNCTION
 -- ==================================================
 
 local Players = game:GetService("Players")
@@ -21,7 +21,7 @@ local CAKE_PRINCE_POSITION = Vector3.new(-2157, 160, -12400)
 local TWEEN_SPEED = 200
 
 -- ==================================================
--- STATE
+-- STATE (No Config)
 -- ==================================================
 local isRunning = false
 local loopConnection = nil
@@ -400,11 +400,10 @@ local function cakePrinceLoop()
 end
 
 -- ==================================================
--- TOGGLE FUNCTION
+-- ⭐ TOGGLE FUNCTION (No Config - Direct Toggle)
 -- ==================================================
 function _G.YOKUDO_ToggleAutoCakePrince()
     isRunning = not isRunning
-    _G.YOKUDO_AutoCakePrinceEnabled = isRunning
     
     if isRunning then
         hasBypassTeleported = false
@@ -450,27 +449,16 @@ function _G.YOKUDO_ToggleAutoCakePrince()
         print("🎂 Auto Cake Prince Stopped")
     end
     
+    -- ⭐ Update UI (No Config)
     if _G.YOKUDO_UpdateUI_CakePrince then
         _G.YOKUDO_UpdateUI_CakePrince(isRunning)
     end
-    
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoCakePrince", isRunning)
-    end
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
+-- STATE (No Config)
 -- ==================================================
-function _G.YOKUDO_SetCakePrince(enabled)
-    if enabled == isRunning then return end
-    _G.YOKUDO_ToggleAutoCakePrince()
-end
-
--- ==================================================
--- STATE
--- ==================================================
-_G.YOKUDO_AutoCakePrinceEnabled = _G.YOKUDO_AutoCakePrinceEnabled or false
+_G.YOKUDO_AutoCakePrinceEnabled = false
 
 -- ==================================================
 -- CHARACTER RESPAWN HANDLER
@@ -484,4 +472,4 @@ Player.CharacterAdded:Connect(function()
     end
 end)
 
-print("✅ AutoCakePrince Loaded (Config Ready - With Set)")
+print("✅ AutoCakePrince Loaded (SEA3 - No Config - Toggle Function)")
