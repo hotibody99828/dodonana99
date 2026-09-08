@@ -74,19 +74,19 @@ local function CreateServerCard(parent, data, titleText)
     stroke.Transparency = 0.3
     stroke.Parent = card
 
-    -- ⭐ Title Value (តូចជាងមុន)
+    -- Title (Value ពី Server) - តូចជាងមុន
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, -20, 0, 18)
     title.Position = UDim2.new(0, 10, 0, 4)
     title.BackgroundTransparency = 1
     title.Text = titleText
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 11
+    title.TextSize = 12
     title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = card
 
-    -- Player Count (ទុក Size ដដែល)
+    -- Player Count
     local playerLabel = Instance.new("TextLabel")
     playerLabel.Size = UDim2.new(1, -20, 0, 16)
     playerLabel.Position = UDim2.new(0, 10, 0, 24)
@@ -98,10 +98,10 @@ local function CreateServerCard(parent, data, titleText)
     playerLabel.TextXAlignment = Enum.TextXAlignment.Left
     playerLabel.Parent = card
 
-    -- JobID (ទុក Size ដដែល)
+    -- JobID (Mask)
     local jobLabel = Instance.new("TextLabel")
     jobLabel.Size = UDim2.new(1, -20, 0, 16)
-    jobLabel.Position = UDim2.new(0, 10, 0, 42)
+    jobLabel.Position = UDim2.new(0, 10, 0, 43)
     jobLabel.BackgroundTransparency = 1
     jobLabel.Text = "Jobid : " .. MaskJobId(data.jobid)
     jobLabel.TextColor3 = Color3.fromRGB(145, 145, 175)
@@ -111,10 +111,10 @@ local function CreateServerCard(parent, data, titleText)
     jobLabel.TextTruncate = Enum.TextTruncate.AtEnd
     jobLabel.Parent = card
 
-    -- Age (ទុក Size ដដែល)
+    -- Age (ពណ៌លឿង)
     local ageLabel = Instance.new("TextLabel")
     ageLabel.Size = UDim2.new(0, 60, 0, 16)
-    ageLabel.Position = UDim2.new(1, -70, 0, 42)
+    ageLabel.Position = UDim2.new(1, -70, 0, 43)
     ageLabel.BackgroundTransparency = 1
     ageLabel.Text = "Age : " .. tostring(data.age or 0) .. "s"
     ageLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
@@ -204,56 +204,86 @@ local function CreateServerList(parent)
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH TEXT (Text "Refresh Server" នៅខាងឆ្វេង)
+-- ⭐ CREATE REFRESH BUTTON (ពេញទទឹង + ដាក់ Text ខាងឆ្វេង + Animation)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
     local LastRefreshTime = 0
     local isCooldown = false
 
-    -- ⭐ Text "Refresh Server" នៅខាងឆ្វេង (មិនមែន Button)
+    -- Button Holder
+    local btnHolder = Instance.new("Frame")
+    btnHolder.Size = UDim2.new(1, 0, 0, 35)
+    btnHolder.BackgroundTransparency = 1
+    btnHolder.BorderSizePixel = 0
+    btnHolder.Parent = parent
+
+    -- Button (ពេញទទឹង Page)
+    local refreshBtn = Instance.new("TextButton")
+    refreshBtn.Size = UDim2.new(1, 0, 0, 35)  -- ⭐ ពេញទទឹង
+    refreshBtn.Position = UDim2.new(0, 0, 0, 0)
+    refreshBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    refreshBtn.BackgroundTransparency = 0.3
+    refreshBtn.Text = ""
+    refreshBtn.AutoButtonColor = false
+    refreshBtn.Parent = btnHolder
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = refreshBtn
+
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(200, 200, 220)
+    btnStroke.Thickness = 1
+    btnStroke.Transparency = 0.3
+    btnStroke.Parent = refreshBtn
+
+    -- ⭐ Text "Refresh Server" នៅខាងឆ្វេង
     local refreshText = Instance.new("TextLabel")
-    refreshText.Size = UDim2.new(0, 150, 0, 30)
+    refreshText.Size = UDim2.new(1, -20, 1, 0)
     refreshText.Position = UDim2.new(0, 10, 0, 0)
     refreshText.BackgroundTransparency = 1
     refreshText.Text = "Refresh Server"
     refreshText.TextColor3 = Color3.fromRGB(200, 200, 220)
-    refreshText.TextSize = 13
+    refreshText.TextSize = 12
     refreshText.Font = Enum.Font.GothamBold
     refreshText.TextXAlignment = Enum.TextXAlignment.Left
     refreshText.TextYAlignment = Enum.TextYAlignment.Center
-    refreshText.Parent = parent
+    refreshText.Parent = refreshBtn
 
-    -- ⭐ SubText "Click Refresh for find new server"
-    local subText = Instance.new("TextLabel")
-    subText.Size = UDim2.new(0, 180, 0, 14)
-    subText.Position = UDim2.new(0, 10, 0, 20)
-    subText.BackgroundTransparency = 1
-    subText.Text = "Click Refresh for find new server"
-    subText.TextColor3 = Color3.fromRGB(145, 145, 165)
-    subText.TextSize = 9
-    subText.Font = Enum.Font.GothamMedium
-    subText.TextXAlignment = Enum.TextXAlignment.Left
-    subText.TextYAlignment = Enum.TextYAlignment.Top
-    subText.Parent = parent
+    -- Animation Slide
+    local slide = Instance.new("Frame")
+    slide.Size = UDim2.new(0, 0, 1, 0)
+    slide.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    slide.BackgroundTransparency = 0.7
+    slide.BorderSizePixel = 0
+    slide.Parent = refreshBtn
 
     local serverList = CreateServerList(parent)
 
-    -- ⭐ Click Area (ចុចលើ Text ដើម្បី Refresh)
-    local clickArea = Instance.new("TextButton")
-    clickArea.Size = UDim2.new(0, 200, 0, 35)
-    clickArea.Position = UDim2.new(0, 0, 0, 0)
-    clickArea.BackgroundTransparency = 1
-    clickArea.Text = ""
-    clickArea.AutoButtonColor = false
-    clickArea.Parent = parent
+    -- Animation Function
+    local function PlaySlideAnimation()
+        slide.Size = UDim2.new(0, 0, 1, 0)
+        local tween = Y.TS:Create(slide, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(1, 0, 1, 0)
+        })
+        tween:Play()
+        tween.Completed:Wait()
+        slide.Size = UDim2.new(0, 0, 1, 0)
+    end
+
+    -- Cooldown (លាក់ - កុំឲ្យ User ឃើញ)
+    local function CheckCooldown()
+        return isCooldown
+    end
 
     -- Click Event
-    clickArea.MouseButton1Click:Connect(function()
+    refreshBtn.MouseButton1Click:Connect(function()
         if CheckCooldown() then return end
 
         isCooldown = true
         LastRefreshTime = tick()
+        PlaySlideAnimation()
 
         local servers = LoadDataFromVPS(type)
         UpdateServerList(serverList, servers, titleText)
@@ -270,7 +300,7 @@ local function CreateRefreshBtn(parent, type, titleText)
         end)
     end)
 
-    return refreshText, serverList
+    return refreshBtn, serverList
 end
 
 -- ==================================================
