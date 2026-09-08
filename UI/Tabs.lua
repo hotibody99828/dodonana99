@@ -56,7 +56,6 @@ end
 -- ⭐ CREATE SERVER CARD (ចុចលើ Card → Teleport)
 -- ==================================================
 local function CreateServerCard(parent, data, titleText)
-    -- ប្ដូរពី Frame → TextButton ដើម្បីឲ្យចុចបានទាំងមូល
     local card = Instance.new("TextButton")
     card.Size = UDim2.new(1, 0, 0, 70)
     card.BackgroundColor3 = Color3.fromRGB(22, 23, 31)
@@ -144,7 +143,7 @@ local function CreateServerCard(parent, data, titleText)
 end
 
 -- ==================================================
--- ⭐ UPDATE SERVER LIST (បង្ហាញ Data ពី VPS)
+-- ⭐ UPDATE SERVER LIST (បង្ហាញ Data ពី VPS - ដក No servers found)
 -- ==================================================
 local function UpdateServerList(serverList, servers, titleText)
     for _, child in ipairs(serverList:GetChildren()) do
@@ -156,15 +155,7 @@ local function UpdateServerList(serverList, servers, titleText)
     end)
 
     if #servers == 0 then
-        local emptyLabel = Instance.new("TextLabel")
-        emptyLabel.Size = UDim2.new(1, 0, 0, 30)
-        emptyLabel.BackgroundTransparency = 1
-        emptyLabel.Text = "No servers found"
-        emptyLabel.TextColor3 = Color3.fromRGB(155, 155, 175)
-        emptyLabel.TextSize = 12
-        emptyLabel.Font = Enum.Font.GothamMedium
-        emptyLabel.Parent = serverList
-        return
+        return  -- ⭐ ដក "No servers found" ចេញ - ទុកតែ Button Refresh Server
     end
 
     -- ⭐ ប្រើ server.extra ជា Title (បើមាន)
@@ -207,7 +198,7 @@ local function CreateRefreshBtn(parent, type, titleText)
     local refreshBtn = Instance.new("TextButton")
     refreshBtn.Size = UDim2.new(1, 0, 0, 30)
     refreshBtn.BackgroundColor3 = Color3.fromRGB(105, 90, 190)
-    refreshBtn.BackgroundTransparency = 0.6  -- ⭐ ថ្លាជាងមុន
+    refreshBtn.BackgroundTransparency = 0.6
     refreshBtn.Text = "Refresh Server"
     refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     refreshBtn.TextSize = 12
