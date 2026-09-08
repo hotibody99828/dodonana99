@@ -204,7 +204,7 @@ local function CreateServerList(parent)
 end
 
 -- ==================================================
--- ⭐ CREATE REFRESH BUTTON (ពេញទទឹង + ដាក់ Text ខាងឆ្វេង + Animation)
+-- ⭐ CREATE REFRESH BUTTON (ចុចបានគ្រប់ពេល + Cooldown លាក់)
 -- ==================================================
 local function CreateRefreshBtn(parent, type, titleText)
     local CooldownTime = 5
@@ -218,14 +218,15 @@ local function CreateRefreshBtn(parent, type, titleText)
     btnHolder.BorderSizePixel = 0
     btnHolder.Parent = parent
 
-    -- Button (ពេញទទឹង Page)
+    -- Button (ពេញទទឹង + ដាក់ Text ខាងឆ្វេង)
     local refreshBtn = Instance.new("TextButton")
-    refreshBtn.Size = UDim2.new(1, 0, 0, 35)  -- ⭐ ពេញទទឹង
+    refreshBtn.Size = UDim2.new(1, 0, 0, 35)
     refreshBtn.Position = UDim2.new(0, 0, 0, 0)
     refreshBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
     refreshBtn.BackgroundTransparency = 0.3
     refreshBtn.Text = ""
     refreshBtn.AutoButtonColor = false
+    refreshBtn.Active = true  -- ⭐ អាចចុចបានគ្រប់ពេល
     refreshBtn.Parent = btnHolder
 
     local btnCorner = Instance.new("UICorner")
@@ -279,7 +280,10 @@ local function CreateRefreshBtn(parent, type, titleText)
 
     -- Click Event
     refreshBtn.MouseButton1Click:Connect(function()
-        if CheckCooldown() then return end
+        -- ⭐ អាចចុចបានគ្រប់ពេល ប៉ុន្តែមាន Cooldown លាក់
+        if CheckCooldown() then
+            return
+        end
 
         isCooldown = true
         LastRefreshTime = tick()
