@@ -13,21 +13,22 @@ local HttpService = game:GetService("HttpService")
 local VPS_URL = "http://217.216.73.147:3000"
 
 -- ==================================================
--- ⭐ LOAD DATA FROM VPS
+-- ⭐ LOAD DATA FROM VPS (ប្រើ game:HttpGet)
 -- ==================================================
 local function LoadDataFromVPS(type)
     pcall(function()
-        local requestFunc = syn and syn.request or http and http.request or request
-        if requestFunc then
-            local response = requestFunc({
-                Url = VPS_URL .. "/api/data/" .. type,
-                Method = "GET"
-            })
-            
-            if response and response.StatusCode == 200 then
-                local data = HttpService:JSONDecode(response.Body)
-                return data.servers or {}
-            end
+        local url = VPS_URL .. "/api/data/" .. type
+        local response = game:HttpGet(url)
+        
+        print("🔍 Loading: " .. type)
+        print("🔍 Response: " .. tostring(response))
+        
+        if response and response ~= "" then
+            local data = HttpService:JSONDecode(response)
+            print("🔍 Count: " .. tostring(#(data.servers or {})))
+            return data.servers or {}
+        else
+            print("❌ Empty response!")
         end
     end)
     return {}
@@ -886,5 +887,21 @@ end)
 -- ==================================================
 
 _G.YOKUDO_AutoHopPage = AutoHopPage
+_G.YOKUDO_NearMoonPage = NearMoonPage
+_G.YOKUDO_FullMoonPage = FullMoonPage
+_G.YOKUDO_DoughKingPage = DoughKingPage
+_G.YOKUDO_RipIndraPage = RipIndraPage
+_G.YOKUDO_CakePrincePage = CakePrincePage
+_G.YOKUDO_CakeQueenPage = CakeQueenPage
+_G.YOKUDO_EliteHunterPage = EliteHunterPage
+_G.YOKUDO_SoulReaperPage = SoulReaperPage
+_G.YOKUDO_PirateRaidPage = PirateRaidPage
+_G.YOKUDO_TyrantSkiesPage = TyrantSkiesPage
+_G.YOKUDO_MirageIslandPage = MirageIslandPage
+_G.YOKUDO_PrehistoricIslandPage = PrehistoricIslandPage
+_G.YOKUDO_KitsuneIslandPage = KitsuneIslandPage
+_G.YOKUDO_HakiLegendaryPage = HakiLegendaryPage
+_G.YOKUDO_FruitPage = FruitPage
+_G.YOKUDO_BerryPage = BerryPage
 
 print("✅ Tabs Loaded (SEA3 - No Config - Server Checker)")
