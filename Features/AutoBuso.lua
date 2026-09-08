@@ -1,14 +1,20 @@
 -- ==================================================
--- AUTO BUSO HAKI (SEA3) - ជាមួយ Config Save
+-- AUTO BUSO HAKI (SEA3) - NO CONFIG + AUTO START
 -- ==================================================
 
 local Y = _G.Y
 local Player = _G.YOKUDO.Player
 
-_G.YOKUDO_BusoEnabled = false
+-- ==================================================
+-- STATE (កំណត់ true ដំបូង)
+-- ==================================================
+_G.YOKUDO_BusoEnabled = true
 _G.YOKUDO_BusoLoopConnection = nil
 _G.YOKUDO_BusoCharConnection = nil
 
+-- ==================================================
+-- CHECK BUSO
+-- ==================================================
 local function IsBusoOn()
     local username = Player.Local.Name
     local character = Y.WS:FindFirstChild("Characters") and Y.WS.Characters:FindFirstChild(username)
@@ -18,6 +24,9 @@ local function IsBusoOn()
     return false
 end
 
+-- ==================================================
+-- TURN ON BUSO
+-- ==================================================
 local function TurnOnBuso()
     local Remote = Y.Replicated:FindFirstChild("Remotes")
     if Remote then
@@ -30,21 +39,35 @@ local function TurnOnBuso()
     end
 end
 
+-- ==================================================
+-- START AUTO BUSO
+-- ==================================================
 function startAutoBuso()
     if _G.YOKUDO_BusoLoopConnection then return end
+    
+    -- Turn on Buso immediately
     TurnOnBuso()
+    
+    -- Loop to keep Buso on
     _G.YOKUDO_BusoLoopConnection = Y.RS.Stepped:Connect(function()
         if not _G.YOKUDO_BusoEnabled then return end
         if not IsBusoOn() then
             TurnOnBuso()
         end
     end)
+    
+    -- Restart on respawn
     _G.YOKUDO_BusoCharConnection = Player.OnCharacterAdded(function()
         task.wait(0.5)
-        if _G.YOKUDO_BusoEnabled then TurnOnBuso() end
+        if _G.YOKUDO_BusoEnabled then 
+            TurnOnBuso() 
+        end
     end)
 end
 
+-- ==================================================
+-- STOP AUTO BUSO
+-- ==================================================
 function stopAutoBuso()
     if _G.YOKUDO_BusoLoopConnection then 
         _G.YOKUDO_BusoLoopConnection:Disconnect() 
@@ -57,41 +80,47 @@ function stopAutoBuso()
 end
 
 -- ==================================================
--- ⭐ SET FUNCTION (សម្រាប់ ConfigManager)
+-- TOGGLE FUNCTION (សម្រាប់ User Click)
 -- ==================================================
-function _G.YOKUDO_SetBuso(enabled)
-    if enabled == _G.YOKUDO_BusoEnabled then return end
+function _G.YOKUDO_ToggleAutoBuso()
+    _G.YOKUDO_BusoEnabled = not _G.YOKUDO_BusoEnabled
     
-    _G.YOKUDO_BusoEnabled = enabled
-    if enabled then
+    if _G.YOKUDO_BusoEnabled then
         startAutoBuso()
-        print("✅ Auto Buso: ON (Config)")
+        print("✅ Auto Buso: ON")
     else
         stopAutoBuso()
-        print("❌ Auto Buso: OFF (Config)")
+        print("❌ Auto Buso: OFF")
     end
     
     -- Update UI
     if _G.YOKUDO_UpdateUI_Buso then
-        _G.YOKUDO_UpdateUI_Buso(enabled)
+        _G.YOKUDO_UpdateUI_Buso(_G.YOKUDO_BusoEnabled)
     end
+end
+
+-- ==================================================
+-- ⭐ AUTO START (ចាប់ផ្ដើមភ្លាមៗ)
+-- ==================================================
+task.spawn(function()
+    -- រង់ចាំ Character Loaded
+    repeat task.wait() until Player.Local and Player.Local.Character and Player.Local.Character:FindFirstChild("HumanoidRootPart")
     
-    -- Save Config
-    if _G.YOKUDO_UpdateConfig then
-        _G.YOKUDO_UpdateConfig("AutoBuso", enabled)
+    -- ចាប់ផ្ដើម Auto Buso
+    if _G.YOKUDO_BusoEnabled then
+        startAutoBuso()
+        print("✅ Auto Buso started automatically (ON)")
     end
-end
+end)
 
 -- ==================================================
--- TOGGLE FUNCTION (សម្រាប់ User Click)
+-- UPDATE UI STATE (ឲ្យ UI បង្ហាញ ON)
 -- ==================================================
-function _G.YOKUDO_ToggleAutoBuso()
-    _G.YOKUDO_SetBuso(not _G.YOKUDO_BusoEnabled)
-end
+task.spawn(function()
+    task.wait(0.5)
+    if _G.YOKUDO_UpdateUI_Buso then
+        _G.YOKUDO_UpdateUI_Buso(true)
+    end
+end)
 
--- ==================================================
--- STATE (ប្រើ or false ដើម្បីកុំឲ្យ Reset)
--- ==================================================
-_G.YOKUDO_BusoEnabled = _G.YOKUDO_BusoEnabled or false
-
-print("✅ AutoBuso Loaded (Config Ready - With Set)")
+print("✅ AutoBuso Loaded (SEA3 - No Config - Auto Start ON)")
