@@ -225,5 +225,6 @@ local function CreateRefreshBtn(parent, type, titleText)
     return refreshBtn, serverList
 end
 
--- Execute
+-- ⭐ រង់ចាំ Pages បង្កើតរួច ទើប CreateRefreshBtn
+task.wait(1)
 CreateRefreshBtn(_G.YOKUDO_BerryPage, "sea3_berry", "Berry")
