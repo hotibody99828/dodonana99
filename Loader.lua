@@ -1,5 +1,5 @@
 -- ==================================================
--- YOKUDO HUB | SEA3 | [Premium] | Loader (NO BACKGROUND + ONLY %)
+-- YOKUDO HUB | SEA3 | [Premium] | Loader (NO CONFIG)
 -- ==================================================
 -- loadstring(game:HttpGet("https://raw.githubusercontent.com/hotibody99828/backupsea2/main/Loader.lua"))()
 -- ==================================================
@@ -233,7 +233,7 @@ task.spawn(function()
 end)
 
 -- ==================================================
--- LOAD FEATURES
+-- LOAD FEATURES (PARALLEL - គ្មាន Config Manager)
 -- ==================================================
 task.spawn(function()
     local Features = {
@@ -264,40 +264,25 @@ task.spawn(function()
     local total = #Features
     local loaded = 0
     
+    -- ⭐ ផ្ទុក Features ទាំងអស់ក្នុងពេលតែមួយ
+    local threads = {}
     for _, Feature in ipairs(Features) do
-        pcall(function()
-            loadstring(GetScript("Features/" .. Feature .. ".lua"))()
-        end)
-        loaded = loaded + 1
-        local percent = 70 + (loaded / total * 25)
-        Loading.Update(percent)
+        table.insert(threads, task.spawn(function()
+            pcall(function()
+                loadstring(GetScript("Features/" .. Feature .. ".lua"))()
+            end)
+            loaded = loaded + 1
+            local percent = 70 + (loaded / total * 25)
+            Loading.Update(percent)
+        end))
+    end
+    
+    -- រង់ចាំផ្ទុកទាំងអស់រួច
+    for _, thread in ipairs(threads) do
+        task.wait(0.01)
     end
     
     print("✅ All Features Loaded")
-    _G.YOKUDO_FeaturesReady = true
-    Loading.Update(95)
-end)
-
--- ==================================================
--- LOAD CONFIG MANAGER
--- ==================================================
-task.spawn(function()
-    Loading.Update(96)
-    
-    while not _G.YOKUDO_FeaturesReady or not _G.YOKUDO_AutoHopPage do
-        task.wait(0.05)
-    end
-    
-    Loading.Update(97)
-    loadstring(GetScript("Config/ConfigManager.lua"))()
-    
-    while not _G.YOKUDO_ApplyConfig do
-        task.wait(0.05)
-    end
-    
-    Loading.Update(98)
-    _G.YOKUDO_ApplyConfig()
-    
     Loading.Update(100)
     
     task.wait(0.3)
